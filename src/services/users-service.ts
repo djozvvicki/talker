@@ -1,3 +1,4 @@
+import useGeneralStore from "@/store/general-store";
 import {
   collection,
   getDocs,
@@ -25,6 +26,7 @@ export const useRequests = (
 ) => {
   const db = useFirestore();
   const currentUser = useCurrentUser();
+  const generalStore = useGeneralStore();
   const requests = ref([] as IRequest[]);
 
   if (currentUser.value) {
@@ -37,26 +39,34 @@ export const useRequests = (
 
         if (type === "added") {
           if (!request.isNotified && !request.isReaded && showNotifications) {
-            navigator.serviceWorker.ready.then((r) => {
-              r.showNotification(request.type, {
-                icon: "/talker.svg",
-                body: `${request.from.name} ${request.message}`,
-                data: {
-                  requestID: request.id,
-                  requestType: request.type,
-                  requestFromID: request.from.authID,
-                },
-                actions: [
-                  {
-                    action: "decline",
-                    title: "Decline",
-                  },
-                  {
-                    action: "accept",
-                    title: "Accept",
-                  },
-                ],
-              });
+            navigator.serviceWorker.ready.then((reg) => {
+              if (generalStore.notificationPermission !== "granted") {
+                Notification.requestPermission().then((r) => {
+                  if (r === "granted") {
+                    generalStore.notificationPermission = "granted";
+
+                    reg.showNotification(request.type, {
+                      icon: "/talker.svg",
+                      body: `${request.from.name} ${request.message}`,
+                      data: {
+                        requestID: request.id,
+                        requestType: request.type,
+                        requestFromID: request.from.authID,
+                      },
+                      actions: [
+                        {
+                          action: "decline",
+                          title: "Decline",
+                        },
+                        {
+                          action: "accept",
+                          title: "Accept",
+                        },
+                      ],
+                    });
+                  }
+                });
+              }
             });
           }
 
