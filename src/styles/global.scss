@@ -1,0 +1,13 @@
+*,
+*::after,
+*::before {
+  font-family: "Commissioner", sans-serif;
+}
+
+input,
+textarea,
+button,
+select,
+a {
+  -webkit-tap-highlight-color: transparent;
+}

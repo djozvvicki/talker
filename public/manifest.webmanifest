@@ -1,0 +1,11 @@
+{
+  "name": "Talker - Chat App",
+  "short_name": "Talker",
+  "icons": [
+    { "src": "/talker.svg", "type": "image/svg+xml", "sizes": "512x512" },
+    { "src": "/talker.svg", "type": "image/svg+xml", "sizes": "192x192" }
+  ],
+  "theme_color": "#121212",
+  "background_color": "#121212",
+  "display": "fullscreen"
+}
