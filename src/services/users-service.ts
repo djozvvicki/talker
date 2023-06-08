@@ -27,19 +27,7 @@ export const useRequests = (
   const currentUser = useCurrentUser();
   const requests = ref([] as IRequest[]);
 
-  if (!("serviceWorker" in navigator)) {
-    throw new Error("No Service Worker support!");
-  }
-  if (!("PushManager" in window)) {
-    throw new Error("No Push API Support!");
-  }
-
-  const registerServiceWorker = async () => {
-    await navigator.serviceWorker.register("/notify-sw.js");
-  };
-
   if (currentUser.value) {
-    registerServiceWorker();
     const q = query(collection(db, "users", currentUser.value.uid, "requests"));
 
     onSnapshot(q, (snapshot) => {
@@ -53,6 +41,21 @@ export const useRequests = (
               r.showNotification(request.type, {
                 icon: "/talker.svg",
                 body: `${request.from.name} ${request.message}`,
+                data: {
+                  requestID: request.id,
+                  requestType: request.type,
+                  requestFromID: request.from.authID,
+                },
+                actions: [
+                  {
+                    action: "decline",
+                    title: "Decline",
+                  },
+                  {
+                    action: "accept",
+                    title: "Accept",
+                  },
+                ],
               });
             });
           }

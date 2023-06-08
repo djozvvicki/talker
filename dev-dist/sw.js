@@ -69,6 +69,7 @@ if (!self.define) {
 }
 define(['./workbox-5357ef54'], (function (workbox) { 'use strict';
 
+  importScripts("./public/talker-sw.js");
   self.skipWaiting();
   workbox.clientsClaim();
 
@@ -82,11 +83,12 @@ define(['./workbox-5357ef54'], (function (workbox) { 'use strict';
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "index.html",
-    "revision": "0.231oaqhoa28"
+    "revision": "0.53kc7jbrg4"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/]
   }));
+  self.__WB_DISABLE_DEV_LOGS = true;
 
 }));

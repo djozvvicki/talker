@@ -3,7 +3,6 @@ import { VitePWA } from "vite-plugin-pwa";
 import vue from "@vitejs/plugin-vue";
 import { resolve } from "path";
 
-// https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
     alias: {
@@ -23,11 +22,12 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: "autoUpdate",
-      injectRegister: "auto",
       workbox: {
+        importScripts: ["./public/talker-sw.js"],
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
       },
       devOptions: {
+        type: "module",
         enabled: true,
       },
       manifest: {
