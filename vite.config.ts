@@ -23,7 +23,7 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       workbox: {
-        importScripts: ["./public/talker-sw.js"],
+        importScripts: ["./talker-sw.js"],
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
       },
       devOptions: {
