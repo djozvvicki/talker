@@ -44,27 +44,29 @@ export const useRequests = (
                 Notification.requestPermission().then((r) => {
                   if (r === "granted") {
                     generalStore.notificationPermission = "granted";
-
-                    reg.showNotification(request.type, {
-                      icon: "/talker.svg",
-                      body: `${request.from.name} ${request.message}`,
-                      data: {
-                        requestID: request.id,
-                        requestType: request.type,
-                        requestFromID: request.from.authID,
-                      },
-                      actions: [
-                        {
-                          action: "decline",
-                          title: "Decline",
-                        },
-                        {
-                          action: "accept",
-                          title: "Accept",
-                        },
-                      ],
-                    });
                   }
+                });
+              }
+
+              if (generalStore.notificationPermission === "granted") {
+                reg.showNotification(request.type, {
+                  icon: "/talker.svg",
+                  body: `${request.from.name} ${request.message}`,
+                  data: {
+                    requestID: request.id,
+                    requestType: request.type,
+                    requestFromID: request.from.authID,
+                  },
+                  actions: [
+                    {
+                      action: "decline",
+                      title: "Decline",
+                    },
+                    {
+                      action: "accept",
+                      title: "Accept",
+                    },
+                  ],
                 });
               }
             });
