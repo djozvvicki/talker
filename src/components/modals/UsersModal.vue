@@ -4,7 +4,7 @@ import Modal from "@components/modals/Modal.vue";
 import SearchInput from "@components/SearchInput.vue";
 import useUsers from "@services/users-service";
 import { IconUsers, IconUser, IconPlus } from "@tabler/icons-vue";
-import { ref, watchEffect } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import { useCurrentUser } from "vuefire";
 
 const isVisible = ref<boolean>(false);
@@ -23,7 +23,7 @@ const openModal = () => {
 const handleCreateFriendRequest = async (selectedUser: IUser) => {
   if (currentUser.value) {
     const actualUser = users.value.find(
-      (user) => user.id === currentUser.value?.uid
+      (user) => user.authID === currentUser.value?.uid
     );
 
     if (actualUser) {
@@ -35,6 +35,10 @@ const handleCreateFriendRequest = async (selectedUser: IUser) => {
 const closeModal = () => {
   isVisible.value = false;
 };
+
+const sortedUsers = computed(() => {
+  return users.value.sort((a, b) => (a.nick > b.nick ? 1 : -1));
+});
 
 defineExpose({ openModal });
 </script>
@@ -54,7 +58,7 @@ defineExpose({ openModal });
         <div class="overflow-scroll h-full p-2 pb-5 mt-2">
           <li
             class="flex p-2 items-center mb-2 justify-between rounded-full bg-[#12121207]"
-            v-for="user in users"
+            v-for="user in sortedUsers"
             :key="user.id"
           >
             <div class="flex">

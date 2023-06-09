@@ -8,6 +8,7 @@ import { VueFire, VueFireAuth } from "vuefire";
 import routes from "@routes/index";
 import firebaseApp from "@services/firebase";
 import { getCurrentUser } from "vuefire";
+import { initSW } from "@/utils";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -42,3 +43,5 @@ app
   .mount("#app");
 
 router.replace({ name: "app.splash" });
+
+initSW();

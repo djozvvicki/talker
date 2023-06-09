@@ -22,14 +22,20 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: "autoUpdate",
-      workbox: {
-        importScripts: ["./talker-sw.js"],
-        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
-      },
+      filename: "talker-sw.ts",
+      includeManifestIcons: true,
+      injectRegister: false,
       devOptions: {
         type: "module",
         enabled: true,
       },
+      workbox: {
+        globIgnores: ["**/node_modules/**/*", "talker-sw.js"],
+      },
+      scope: "/",
+      srcDir: "src/service-worker",
+      outDir: "public",
+      strategies: "injectManifest",
       manifest: {
         name: "Talker",
         short_name: "Talker",

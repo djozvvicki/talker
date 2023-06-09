@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import SearchInput from "@/components/SearchInput.vue";
 import { APP_ROUTE_NAMES } from "@/constants";
+import useFunctionsService from "@/services/functions-service";
 import { IconSend } from "@tabler/icons-vue";
 import { IconMessage, IconAlertTriangle } from "@tabler/icons-vue";
 import { onMounted, ref } from "vue";
@@ -9,6 +10,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const chats = ref([]);
+const { handleHelloWorld } = useFunctionsService();
 
 onMounted(() => {
   router.push({ name: APP_ROUTE_NAMES.CHATS });
@@ -46,6 +48,7 @@ onMounted(() => {
     <div class="absolute bottom-6 right-6">
       <button
         class="flex items-center justify-center rounded-full w-[60px] h-[60px] bg-[#121212]"
+        @click="handleHelloWorld"
       >
         <IconSend class="text-white scale-[125%]" />
       </button>

@@ -56,3 +56,22 @@ export const getFieldFromErrorCode = (errCode: string) => {
 
   return field;
 };
+
+export function initSW() {
+  window.addEventListener("load", async () => {
+    if ("serviceWorker" in navigator) {
+      const messageChannel = new MessageChannel();
+
+      await navigator.serviceWorker.register("/talker-sw.js", {
+        type: "classic",
+      });
+
+      await navigator.serviceWorker.controller?.postMessage(
+        {
+          type: "INIT_COMMUNICATION",
+        },
+        [messageChannel.port2]
+      );
+    }
+  });
+}
