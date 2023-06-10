@@ -12,15 +12,25 @@ const bc = new BroadcastChannel("talker-sw");
 const app = initializeApp(config);
 const messaging = getMessaging(app);
 
-onBackgroundMessage(messaging, (payload) => {
-  console.log(" Received background message ", payload);
-  // Customize notification here
-  const notificationTitle = "Background Message Title";
-  const notificationOptions = {
-    body: "Background Message body.",
-  };
+onBackgroundMessage(messaging, async (payload) => {
+  const reg = await navigator.serviceWorker.ready;
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  if (payload.data) {
+    reg.showNotification(payload.data.type, {
+      tag: "FRIEND_REQUEST",
+      body: `${payload.data.name} ${payload.data.message}`,
+      actions: [
+        {
+          action: "decline",
+          title: "Decline",
+        },
+        {
+          action: "accept",
+          title: "Accept",
+        },
+      ],
+    });
+  }
 });
 
 precacheAndRoute(self.__WB_MANIFEST || []);
