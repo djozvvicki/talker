@@ -119,10 +119,11 @@ self.addEventListener("notificationclick", (event) => {
           let client = clientList[i];
           if (client.url.includes("/app") && "focus" in client) {
             client.focus();
-            bc.postMessage({
-              type: "CHANGE_VIEW",
-              newPage: "app.notifications",
-            });
+            client.navigate("/?nextPage=app.notifications");
+            // bc.postMessage({
+            //   type: "CHANGE_VIEW",
+            //   newPage: "app.notifications",
+            // });
           }
           return;
         }
