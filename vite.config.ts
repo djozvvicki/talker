@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, splitVendorChunkPlugin } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import vue from "@vitejs/plugin-vue";
 import { resolve } from "path";
@@ -20,6 +20,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    splitVendorChunkPlugin(),
     VitePWA({
       registerType: "autoUpdate",
       filename: "talker-sw.ts",

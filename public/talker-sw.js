@@ -162,7 +162,7 @@ try {
   self["workbox:strategies:7.0.0"] && _();
 } catch {
 }
-function G(t) {
+function q(t) {
   return typeof t == "string" ? new Request(t) : t;
 }
 class Kn {
@@ -203,7 +203,7 @@ class Kn {
    */
   async fetch(e) {
     const { event: n } = this;
-    let r = G(e);
+    let r = q(e);
     if (r.mode === "navigate" && n instanceof FetchEvent && n.preloadResponse) {
       const i = await n.preloadResponse;
       if (i)
@@ -266,7 +266,7 @@ class Kn {
    * @return {Promise<Response|undefined>} A matching response, if found.
    */
   async cacheMatch(e) {
-    const n = G(e);
+    const n = q(e);
     let r;
     const { cacheName: s, matchOptions: o } = this._strategy, i = await this.getCacheKey(n, "read"), a = Object.assign(Object.assign({}, o), { cacheName: s });
     r = await caches.match(i, a);
@@ -296,7 +296,7 @@ class Kn {
    * not be cached, and `true` otherwise.
    */
   async cachePut(e, n) {
-    const r = G(e);
+    const r = q(e);
     await Fn(0);
     const s = await this.getCacheKey(r, "write");
     if (!n)
@@ -347,7 +347,7 @@ class Kn {
     if (!this._cacheKeys[r]) {
       let s = e;
       for (const o of this.iterateCallbacks("cacheKeyWillBeUsed"))
-        s = G(await o({
+        s = q(await o({
           mode: n,
           request: s,
           event: this.event,
@@ -897,7 +897,7 @@ try {
   self["workbox:routing:7.0.0"] && _();
 } catch {
 }
-const At = "GET", z = (t) => t && typeof t == "object" ? t : { handle: t };
+const At = "GET", G = (t) => t && typeof t == "object" ? t : { handle: t };
 class K {
   /**
    * Constructor for Route class.
@@ -911,7 +911,7 @@ class K {
    * against.
    */
   constructor(e, n, r = At) {
-    this.handler = z(n), this.match = e, this.method = r;
+    this.handler = G(n), this.match = e, this.method = r;
   }
   /**
    *
@@ -919,7 +919,7 @@ class K {
    * function that returns a Promise resolving to a Response
    */
   setCatchHandler(e) {
-    this.catchHandler = z(e);
+    this.catchHandler = G(e);
   }
 }
 class Wn extends K {
@@ -1090,7 +1090,7 @@ class Vn {
    * default handler. Each method has its own default.
    */
   setDefaultHandler(e, n = At) {
-    this._defaultHandlerMap.set(n, z(e));
+    this._defaultHandlerMap.set(n, G(e));
   }
   /**
    * If a Route throws an error while handling a request, this `handler`
@@ -1100,7 +1100,7 @@ class Vn {
    * function that returns a Promise resulting in a Response.
    */
   setCatchHandler(e) {
-    this._catchHandler = z(e);
+    this._catchHandler = G(e);
   }
   /**
    * Registers a route with the router.
@@ -1334,8 +1334,8 @@ const Ot = function(t) {
     const n = e ? this.byteToCharMapWebSafe_ : this.byteToCharMap_, r = [];
     for (let s = 0; s < t.length; s += 3) {
       const o = t[s], i = s + 1 < t.length, a = i ? t[s + 1] : 0, c = s + 2 < t.length, l = c ? t[s + 2] : 0, u = o >> 2, f = (o & 3) << 4 | a >> 4;
-      let A = (a & 15) << 2 | l >> 6, q = l & 63;
-      c || (q = 64, i || (A = 64)), r.push(n[u], n[f], n[A], n[q]);
+      let A = (a & 15) << 2 | l >> 6, V = l & 63;
+      c || (V = 64, i || (A = 64)), r.push(n[u], n[f], n[A], n[V]);
     }
     return r.join("");
   },
@@ -1389,8 +1389,8 @@ const Ot = function(t) {
         throw new tr();
       const A = o << 2 | a >> 4;
       if (r.push(A), l !== 64) {
-        const q = a << 4 & 240 | l >> 2;
-        if (r.push(q), f !== 64) {
+        const V = a << 4 & 240 | l >> 2;
+        if (r.push(V), f !== 64) {
           const Tn = l << 6 & 192 | f;
           r.push(Tn);
         }
@@ -1578,10 +1578,10 @@ function Bt() {
 const lr = "FirebaseError";
 class x extends Error {
   constructor(e, n, r) {
-    super(n), this.code = e, this.customData = r, this.name = lr, Object.setPrototypeOf(this, x.prototype), Error.captureStackTrace && Error.captureStackTrace(this, V.prototype.create);
+    super(n), this.code = e, this.customData = r, this.name = lr, Object.setPrototypeOf(this, x.prototype), Error.captureStackTrace && Error.captureStackTrace(this, W.prototype.create);
   }
 }
-class V {
+class W {
   constructor(e, n, r) {
     this.service = e, this.serviceName = n, this.errors = r;
   }
@@ -2255,7 +2255,7 @@ const ke = "[DEFAULT]", os = {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const J = /* @__PURE__ */ new Map(), De = /* @__PURE__ */ new Map();
+const z = /* @__PURE__ */ new Map(), De = /* @__PURE__ */ new Map();
 function is(t, e) {
   try {
     t.container.addComponent(e);
@@ -2268,7 +2268,7 @@ function D(t) {
   if (De.has(e))
     return M.debug(`There were multiple attempts to register component ${e}.`), !1;
   De.set(e, t);
-  for (const n of J.values())
+  for (const n of z.values())
     is(n, t);
   return !0;
 }
@@ -2337,7 +2337,7 @@ const as = {
     "idb-delete"
     /* AppError.IDB_DELETE */
   ]: "Error thrown when deleting from IndexedDB. Original error: {$originalErrorMessage}."
-}, T = new V("app", "Firebase", as);
+}, T = new W("app", "Firebase", as);
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -2409,7 +2409,7 @@ function jt(t, e = {}) {
       "no-options"
       /* AppError.NO_OPTIONS */
     );
-  const o = J.get(s);
+  const o = z.get(s);
   if (o) {
     if (ve(n, o.options) && ve(r, o.config))
       return o;
@@ -2419,10 +2419,10 @@ function jt(t, e = {}) {
   for (const c of De.values())
     i.addComponent(c);
   const a = new cs(n, r, i);
-  return J.set(s, a), a;
+  return z.set(s, a), a;
 }
 function us(t = ke) {
-  const e = J.get(t);
+  const e = z.get(t);
   if (!e && t === ke && $t())
     return jt();
   if (!e)
@@ -2875,7 +2875,7 @@ const Bs = {
     "delete-pending-registration"
     /* ErrorCode.DELETE_PENDING_REGISTRATION */
   ]: "Can't delete installation while there is a pending registration request."
-}, N = new V($s, Ls, Bs);
+}, N = new W($s, Ls, Bs);
 function zt(t) {
   return t instanceof x && t.code.includes(
     "request-failed"
@@ -3141,7 +3141,7 @@ function Ue() {
     }
   })), de;
 }
-async function Y(t, e) {
+async function J(t, e) {
   const n = Z(t), s = (await Ue()).transaction($, "readwrite"), o = s.objectStore($), i = await o.get(n);
   return await o.put(e, n), await s.done, (!i || i.fid !== e.fid) && nn(t, e.fid), e;
 }
@@ -3215,9 +3215,9 @@ function Xs(t, e) {
 async function Qs(t, e) {
   try {
     const n = await Fs(t, e);
-    return Y(t.appConfig, n);
+    return J(t.appConfig, n);
   } catch (n) {
-    throw zt(n) && n.customData.serverCode === 409 ? await sn(t.appConfig) : await Y(t.appConfig, {
+    throw zt(n) && n.customData.serverCode === 409 ? await sn(t.appConfig) : await J(t.appConfig, {
       fid: e.fid,
       registrationStatus: 0
       /* RequestStatus.NOT_STARTED */
@@ -3362,7 +3362,7 @@ function mt(t) {
 async function so(t, e) {
   try {
     const n = await to(t, e), r = Object.assign(Object.assign({}, e), { authToken: n });
-    return await Y(t.appConfig, r), n;
+    return await J(t.appConfig, r), n;
   } catch (n) {
     if (zt(n) && (n.customData.serverCode === 401 || n.customData.serverCode === 404))
       await sn(t.appConfig);
@@ -3371,7 +3371,7 @@ async function so(t, e) {
         requestStatus: 0
         /* RequestStatus.NOT_STARTED */
       } });
-      await Y(t.appConfig, r);
+      await J(t.appConfig, r);
     }
     throw n;
   }
@@ -3680,10 +3680,10 @@ vo((t) => ({
  * limitations under the License.
  */
 const dn = "BDOU99-h67HcA6JeFXHbSNMu7e2yNNu3RzoMj8TM4W88jITfq7ZmPvIM1Iv-4_l2LxQcYwhqby2xGpWwzjfAnG4", Do = "https://fcmregistrations.googleapis.com/v1", fn = "FCM_MSG", Ao = "google.c.a.c_id", Ro = 3, Oo = 1;
-var X;
+var Y;
 (function(t) {
   t[t.DATA_MESSAGE = 1] = "DATA_MESSAGE", t[t.DISPLAY_NOTIFICATION = 3] = "DISPLAY_NOTIFICATION";
-})(X || (X = {}));
+})(Y || (Y = {}));
 /**
  * @license
  * Copyright 2018 Google LLC
@@ -3698,10 +3698,10 @@ var X;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-var Q;
+var X;
 (function(t) {
   t.PUSH_RECEIVED = "push-received", t.NOTIFICATION_CLICKED = "notification-clicked";
-})(Q || (Q = {}));
+})(X || (X = {}));
 /**
  * @license
  * Copyright 2017 Google LLC
@@ -3946,7 +3946,7 @@ const jo = {
     "use-vapid-key-after-get-token"
     /* ErrorCode.USE_VAPID_KEY_AFTER_GET_TOKEN */
   ]: "The usePublicVapidKey() method may only be called once and must be called before calling getToken() to ensure your VAPID key is used."
-}, g = new V("messaging", "Messaging", jo);
+}, g = new W("messaging", "Messaging", jo);
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -4251,7 +4251,7 @@ async function Zo(t, e) {
 function ei(t, e) {
   var n, r;
   const s = {};
-  return t.from && (s.project_number = t.from), t.fcmMessageId && (s.message_id = t.fcmMessageId), s.instance_id = e, t.notification ? s.message_type = X.DISPLAY_NOTIFICATION.toString() : s.message_type = X.DATA_MESSAGE.toString(), s.sdk_platform = Ro.toString(), s.package_name = self.origin.replace(/(^\w+:|^)\/\//, ""), t.collapse_key && (s.collapse_key = t.collapse_key), s.event = Oo.toString(), !((n = t.fcmOptions) === null || n === void 0) && n.analytics_label && (s.analytics_label = (r = t.fcmOptions) === null || r === void 0 ? void 0 : r.analytics_label), s;
+  return t.from && (s.project_number = t.from), t.fcmMessageId && (s.message_id = t.fcmMessageId), s.instance_id = e, t.notification ? s.message_type = Y.DISPLAY_NOTIFICATION.toString() : s.message_type = Y.DATA_MESSAGE.toString(), s.sdk_platform = Ro.toString(), s.package_name = self.origin.replace(/(^\w+:|^)\/\//, ""), t.collapse_key && (s.collapse_key = t.collapse_key), s.event = Oo.toString(), !((n = t.fcmOptions) === null || n === void 0) && n.analytics_label && (s.analytics_label = (r = t.fcmOptions) === null || r === void 0 ? void 0 : r.analytics_label), s;
 }
 function ti(t, e) {
   const n = {};
@@ -4319,7 +4319,7 @@ async function si(t) {
     return;
   let a = await ai(o);
   if (a ? a = await a.focus() : (a = await self.clients.openWindow(s), await Qo(3e3)), !!a)
-    return r.messageType = Q.NOTIFICATION_CLICKED, r.isFirebaseMessaging = !0, a.postMessage(r);
+    return r.messageType = X.NOTIFICATION_CLICKED, r.isFirebaseMessaging = !0, a.postMessage(r);
 }
 function oi(t) {
   const e = Object.assign({}, t.notification);
@@ -4351,7 +4351,7 @@ function ci(t) {
   !e.url.startsWith("chrome-extension://"));
 }
 function ui(t, e) {
-  e.isFirebaseMessaging = !0, e.messageType = Q.PUSH_RECEIVED;
+  e.isFirebaseMessaging = !0, e.messageType = X.PUSH_RECEIVED;
   for (const n of t)
     n.postMessage(e);
 }
@@ -4871,7 +4871,7 @@ const $i = {
     "use-vapid-key-after-get-token"
     /* ErrorCode.USE_VAPID_KEY_AFTER_GET_TOKEN */
   ]: "The usePublicVapidKey() method may only be called once and must be called before calling getToken() to ensure your VAPID key is used."
-}, p = new V("messaging", "Messaging", $i);
+}, p = new W("messaging", "Messaging", $i);
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -5441,7 +5441,7 @@ Rt(
 );
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", () => self.clients.claim());
-const W = new BroadcastChannel("talker-sw"), oa = jt(_i), Sn = wi(oa);
+const Q = new BroadcastChannel("talker-sw"), oa = jt(_i), Sn = wi(oa);
 yi(Sn, async (t) => {
   t.data && (self.registration.showNotification(t.data.type, {
     tag: "FRIEND_REQUEST",
@@ -5487,38 +5487,36 @@ self.addEventListener("activate", async () => {
     serviceWorkerRegistration: self.registration,
     vapidKey: "BOF-yJZi4d8yVCVRkD6lvrviRbMObr7fHl5ma2IyJzjDC4-Ecr9_FGJsDTloNVuETMQUqH7MVEoXfV3MkGg5yO4"
   });
-  W.postMessage({
+  Q.postMessage({
     type: "TOKEN_DOWNLOAD",
     token: t
   }), I("log", [t]);
 });
 self.addEventListener("notificationclick", (t) => {
   const { notification: e } = t;
-  e.close(), t.waitUntil(
+  e.close(), I("groupCollapsed", ["Notification clicked!"]), I("log", [`Action -> ${t.action ?? "empty"}`]), I("groupEnd", []), t.waitUntil(
     self.clients.matchAll({
       type: "window"
     }).then(function(n) {
       console.log(n);
       for (let r = 0; r < n.length; r++) {
         let s = n[r];
-        s.url.includes("/app") && "focus" in s && (s.focus(), s.navigate("/?nextPage=app.notifications"), W.postMessage({
-          type: "CHANGE_VIEW",
-          newPage: "app.notifications"
-        }));
-        return;
+        if (s.url.includes("/app") && "focus" in s) {
+          s.focused || s.focus(), Q.postMessage({
+            type: "CHANGE_VIEW",
+            newPage: "app.notifications"
+          });
+          return;
+        }
       }
       if (self.clients.openWindow)
         return self.clients.openWindow("/?nextPage=app.notifications");
     })
-  ), I("groupCollapsed", ["Notification clicked!"]), I("log", [`Action -> ${t.action ?? "empty"}`]), I("groupEnd", []), W.postMessage({
-    type: "NOTIFICATION_CLICKED",
-    tag: e.tag,
-    action: t.action
-  });
+  );
 });
-W.onmessage = (t) => {
+Q.onmessage = (t) => {
   var e;
-  ((e = t.data) == null ? void 0 : e.type) === "INIT_COMMUNICATION" && (I("log", ["Communication initialized"]), W.postMessage({
+  ((e = t.data) == null ? void 0 : e.type) === "INIT_COMMUNICATION" && (I("log", ["Communication initialized"]), Q.postMessage({
     type: "Communication initialized"
   }));
 };

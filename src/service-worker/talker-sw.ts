@@ -109,6 +109,9 @@ self.addEventListener("notificationclick", (event) => {
 
   notification.close();
 
+  print("groupCollapsed", ["Notification clicked!"]);
+  print("log", [`Action -> ${event.action ?? "empty"}`]);
+  print("groupEnd", []);
   event.waitUntil(
     self.clients
       .matchAll({
@@ -120,28 +123,19 @@ self.addEventListener("notificationclick", (event) => {
         for (let i = 0; i < clientList.length; i++) {
           let client = clientList[i];
           if (client.url.includes("/app") && "focus" in client) {
-            client.focus();
+            if (!client.focused) client.focus();
             bc.postMessage({
               type: "CHANGE_VIEW",
               newPage: "app.notifications",
             });
+            return;
           }
-          return;
         }
         if (self.clients.openWindow) {
           return self.clients.openWindow("/?nextPage=app.notifications");
         }
       })
   );
-  print("groupCollapsed", ["Notification clicked!"]);
-  print("log", [`Action -> ${event.action ?? "empty"}`]);
-  print("groupEnd", []);
-
-  bc.postMessage({
-    type: "NOTIFICATION_CLICKED",
-    tag: notification.tag,
-    action: event.action,
-  });
 });
 
 bc.onmessage = (ev) => {
