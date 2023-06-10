@@ -38,6 +38,8 @@ onBackgroundMessage(messaging, async (payload) => {
         },
       ],
     });
+
+    console.log(payload);
   }
 });
 
@@ -119,11 +121,10 @@ self.addEventListener("notificationclick", (event) => {
           let client = clientList[i];
           if (client.url.includes("/app") && "focus" in client) {
             client.focus();
-            client.navigate("/?nextPage=app.notifications");
-            // bc.postMessage({
-            //   type: "CHANGE_VIEW",
-            //   newPage: "app.notifications",
-            // });
+            bc.postMessage({
+              type: "CHANGE_VIEW",
+              newPage: "app.notifications",
+            });
           }
           return;
         }

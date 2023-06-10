@@ -1,22 +1,15 @@
 <script lang="ts" setup>
-import { APP_ROUTE_NAMES } from "@/constants";
 import { useRequests, setReadedRequests } from "@/services/users-service";
 import { IconBell, IconAlertTriangle } from "@tabler/icons-vue";
 import { IconUser } from "@tabler/icons-vue";
 import { onMounted, ref, watchEffect } from "vue";
-import { useRouter } from "vue-router";
 import { useCurrentUser } from "vuefire";
 
-const router = useRouter();
 const currentUser = useCurrentUser();
 const requests = ref<IRequest[]>([]);
 
 watchEffect(() => {
   requests.value = useRequests(false) as IRequest[];
-});
-
-onMounted(() => {
-  router.push({ name: APP_ROUTE_NAMES.NOTIFICATIONS });
 });
 
 onMounted(async () => {

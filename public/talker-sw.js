@@ -5443,7 +5443,7 @@ self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", () => self.clients.claim());
 const W = new BroadcastChannel("talker-sw"), oa = jt(_i), Sn = wi(oa);
 yi(Sn, async (t) => {
-  t.data && self.registration.showNotification(t.data.type, {
+  t.data && (self.registration.showNotification(t.data.type, {
     tag: "FRIEND_REQUEST",
     body: `${t.data.name} ${t.data.message}`,
     actions: [
@@ -5456,7 +5456,7 @@ yi(Sn, async (t) => {
         title: "Accept"
       }
     ]
-  });
+  }), console.log(t));
 });
 let Ee = !1;
 const ia = {
@@ -5501,11 +5501,11 @@ self.addEventListener("notificationclick", (t) => {
       console.log(n);
       for (let r = 0; r < n.length; r++) {
         let s = n[r];
-        if (s.url.includes("/app") && "focus" in s)
-          return W.postMessage({
-            type: "CHANGE_VIEW",
-            newPage: "app.notifications"
-          }), s.focus();
+        s.url.includes("/app") && "focus" in s && (s.focus(), s.navigate("/?nextPage=app.notifications"), W.postMessage({
+          type: "CHANGE_VIEW",
+          newPage: "app.notifications"
+        }));
+        return;
       }
       if (self.clients.openWindow)
         return self.clients.openWindow("/?nextPage=app.notifications");

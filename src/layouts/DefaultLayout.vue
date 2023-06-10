@@ -22,14 +22,9 @@ const emits = defineEmits<{
   ): void | Promise<void>;
 }>();
 
-withDefaults(
-  defineProps<{
-    actualView?: APP_ROUTE_NAMES;
-  }>(),
-  {
-    actualView: APP_ROUTE_NAMES.CHATS,
-  }
-);
+defineProps<{
+  actualView: APP_ROUTE_NAMES;
+}>();
 
 const auth = useFirebaseAuth();
 const router = useRouter();

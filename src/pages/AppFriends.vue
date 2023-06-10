@@ -1,12 +1,8 @@
 <script lang="ts" setup>
 import SearchInput from "@/components/SearchInput.vue";
 import UsersModal from "@/components/modals/UsersModal.vue";
-import { APP_ROUTE_NAMES } from "@/constants";
 import { IconPlus, IconUsers, IconAlertTriangle } from "@tabler/icons-vue";
-import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
-
-const router = useRouter();
+import { ref } from "vue";
 
 const friends = ref([]);
 const usersModalRef = ref();
@@ -16,10 +12,6 @@ const openUsersModal = () => {
     usersModalRef.value.openModal();
   }
 };
-
-onMounted(() => {
-  router.push({ name: APP_ROUTE_NAMES.FRIENDS });
-});
 </script>
 
 <template>

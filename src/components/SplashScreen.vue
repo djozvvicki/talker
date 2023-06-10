@@ -12,6 +12,8 @@ const splashScreenTimeout: Ref<NodeJS.Timeout | null> = ref(null);
 const { requestPermission } = useNotificationService();
 
 const hideSplashScreen = () => {
+  console.log("hide splash screen");
+
   router.replace({
     name: APP_ROUTE_NAMES.INDEX,
     query,
