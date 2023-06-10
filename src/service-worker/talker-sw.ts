@@ -8,15 +8,23 @@ import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw";
 import config from "@services/firebase/config";
 import { getToken } from "firebase/messaging";
 
+precacheAndRoute(self.__WB_MANIFEST || []);
+
+registerRoute(
+  ({ request }) => request.mode === "navigate",
+  createHandlerBoundToURL("/index.html")
+);
+
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", () => self.clients.claim());
+
 const bc = new BroadcastChannel("talker-sw");
 const app = initializeApp(config);
 const messaging = getMessaging(app);
 
 onBackgroundMessage(messaging, async (payload) => {
-  const reg = await navigator.serviceWorker.ready;
-
   if (payload.data) {
-    reg.showNotification(payload.data.type, {
+    self.registration.showNotification(payload.data.type, {
       tag: "FRIEND_REQUEST",
       body: `${payload.data.name} ${payload.data.message}`,
       actions: [
@@ -32,13 +40,6 @@ onBackgroundMessage(messaging, async (payload) => {
     });
   }
 });
-
-precacheAndRoute(self.__WB_MANIFEST || []);
-
-registerRoute(
-  ({ request }) => request.mode === "navigate",
-  createHandlerBoundToURL("/index.html")
-);
 
 // Logger
 let inGroup = false;
@@ -104,9 +105,41 @@ self.addEventListener("activate", async () => {
 self.addEventListener("notificationclick", (event) => {
   const { notification } = event;
 
+  notification.close();
+
+  event.waitUntil(
+    self.clients
+      .matchAll({
+        type: "window",
+      })
+      .then(function (clientList) {
+        console.log(clientList);
+
+        for (let i = 0; i < clientList.length; i++) {
+          let client = clientList[i];
+          if (client.url.includes("/app") && "focus" in client) {
+            bc.postMessage({
+              type: "CHANGE_VIEW",
+              newPage: "app.notifications",
+            });
+            client.focus();
+          }
+          return;
+        }
+        if (self.clients.openWindow) {
+          return self.clients.openWindow("/?nextPage=app.notifications");
+        }
+      })
+  );
   print("groupCollapsed", ["Notification clicked!"]);
-  print("log", [`Action -> ${event.action ?? "empty"}`, notification.data]);
+  print("log", [`Action -> ${event.action ?? "empty"}`]);
   print("groupEnd", []);
+
+  bc.postMessage({
+    type: "NOTIFICATION_CLICKED",
+    tag: notification.tag,
+    action: event.action,
+  });
 });
 
 bc.onmessage = (ev) => {

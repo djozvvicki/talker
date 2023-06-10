@@ -1,22 +1,30 @@
 <script lang="ts" setup>
 import Talker from "@assets/talker.svg";
-import { SPLASH_SCREEN_TIME } from "@/constants";
+import { APP_ROUTE_NAMES, SPLASH_SCREEN_TIME } from "@/constants";
 import { type Ref, onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import Loader from "@components/Loader.vue";
+import useNotificationService from "@/services/notifications-service";
 
+const { query } = useRoute();
 const router = useRouter();
 const splashScreenTimeout: Ref<NodeJS.Timeout | null> = ref(null);
+const { requestPermission } = useNotificationService();
 
 const hideSplashScreen = () => {
-  router.replace({ name: "app.index" });
+  router.replace({
+    name: APP_ROUTE_NAMES.CHATS,
+    query,
+  });
   if (splashScreenTimeout.value) {
     clearTimeout(splashScreenTimeout.value);
     splashScreenTimeout.value = null;
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
+  await requestPermission();
+
   splashScreenTimeout.value = setTimeout(hideSplashScreen, SPLASH_SCREEN_TIME);
 });
 </script>

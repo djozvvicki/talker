@@ -34,13 +34,9 @@ const useUsers = () => {
   return usersList.value;
 };
 
-export const useRequests = (
-  returnAsRef: boolean = true,
-  showNotifications: boolean = false
-) => {
+export const useRequests = (returnAsRef: boolean = true) => {
   const currentUser = useCurrentUser();
   const requests = ref([] as IRequest[]);
-  // const { showNotification, requestPermission } = useNotificationService();
 
   if (currentUser.value) {
     const q = query(collection(db, "users", currentUser.value.uid, "requests"));
@@ -51,29 +47,6 @@ export const useRequests = (
         const request = doc.data() as IRequest;
 
         if (type === "added") {
-          if (!request.isNotified && !request.isReaded && showNotifications) {
-            // requestPermission();
-            // showNotification(request.type, {
-            //   icon: "/talker.svg",
-            //   body: `${request.from.name} ${request.message}`,
-            //   data: {
-            //     requestID: request.id,
-            //     requestType: request.type,
-            //     requestFromID: request.from.authID,
-            //   },
-            //   actions: [
-            //     {
-            //       action: "decline",
-            //       title: "Decline",
-            //     },
-            //     {
-            //       action: "accept",
-            //       title: "Accept",
-            //     },
-            //   ],
-            // });
-          }
-
           requests.value.splice(newIndex, 0, request);
         } else if (type === "modified") {
           requests.value.splice(oldIndex, 1);

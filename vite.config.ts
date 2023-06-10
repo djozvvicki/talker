@@ -30,7 +30,12 @@ export default defineConfig({
         enabled: true,
       },
       workbox: {
-        globIgnores: ["**/node_modules/**/*", "talker-sw.js"],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+        globIgnores: [
+          "**/node_modules/**/*",
+          "talker-sw.js",
+          "**/f-emulators/**/*",
+        ],
         sourcemap: true,
       },
       scope: "/",
@@ -40,9 +45,11 @@ export default defineConfig({
       manifest: {
         name: "Talker",
         short_name: "Talker",
+        gcm_sender_id: "603904451577",
         description:
           "Talker is chat and teams management app to easier communication with your friends or team colleagues",
         theme_color: "#121212",
+        start_url: "./",
         icons: [
           {
             src: "/talker.svg",

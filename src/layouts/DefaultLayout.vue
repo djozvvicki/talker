@@ -36,7 +36,7 @@ const router = useRouter();
 const requests: Ref<IRequest[]> = ref([]);
 
 watchEffect(() => {
-  requests.value = useRequests(false, true) as IRequest[];
+  requests.value = useRequests(false) as IRequest[];
 });
 
 const handleGoToNofitications = async () => {

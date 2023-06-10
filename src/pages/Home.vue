@@ -2,8 +2,9 @@
 import { APP_ROUTE_NAMES, NAVIGATION } from "@/constants";
 import DefaultLayout from "@layouts/DefaultLayout.vue";
 import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
+const { query } = useRoute();
 const router = useRouter();
 const actualView = ref<NAVIGATION>(NAVIGATION.CHATS);
 
@@ -13,7 +14,7 @@ const changeActualView = (newView: NAVIGATION) => {
 };
 
 onMounted(() => {
-  router.push({ name: APP_ROUTE_NAMES.CHATS });
+  router.push({ name: query.previousPage as APP_ROUTE_NAMES });
 });
 </script>
 <template>
