@@ -14,6 +14,7 @@ onMessage(messaging, async (payload) => {
 
   if (payload.data) {
     reg.showNotification(payload.data.type, {
+      tag: "FRIEND_REQUEST",
       body: `${payload.data.name} ${payload.data.message}`,
       actions: [
         {

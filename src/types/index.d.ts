@@ -23,3 +23,11 @@ interface IUser {
   name: string;
   requests: IRequest[];
 }
+
+declare const documentPictureInPicture = {
+  requestWindow: ({}: {
+    width?: number;
+    height?: number;
+  }): Promise<window> => {},
+  window: window,
+};

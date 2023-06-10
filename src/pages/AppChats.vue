@@ -9,8 +9,23 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const chats = ref([]);
+const button = ref<HTMLDivElement | null>(null);
+
+const createPip = async () => {
+  if (button.value) {
+    const pipWindow = await documentPictureInPicture.requestWindow({
+      width: button.value.clientWidth,
+      height: button.value.clientHeight,
+    });
+
+    pipWindow.resizeTo(100, 100);
+
+    pipWindow.document.body.appendChild(button.value);
+  }
+};
 
 onMounted(() => {
+  console.log(documentPictureInPicture);
   router.push({ name: APP_ROUTE_NAMES.CHATS });
 });
 </script>
@@ -43,9 +58,11 @@ onMounted(() => {
         </div>
       </template>
     </div>
-    <div class="absolute bottom-6 right-6">
+
+    <div ref="button" class="absolute bottom-6 right-6">
       <button
         class="flex items-center justify-center rounded-full w-[60px] h-[60px] bg-[#121212]"
+        @click="createPip"
       >
         <IconSend class="text-white scale-[125%]" />
       </button>
