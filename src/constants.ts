@@ -14,12 +14,20 @@ export enum NAVIGATION_EMITS {
 }
 
 export const APP_ROUTE_TITLES = {
-  calls: "Połączenia",
-  chats: "Czaty",
-  settings: "Ustawienia",
-  teams: "Grupy",
-  friends: "Znajomi",
-  notifications: "Powiadomienia",
+  "app.index": "Index",
+  "app.calls": "Połączenia",
+  "app.chats": "Czaty",
+  "app.settings": "Ustawienia",
+  "app.teams": "Zespoły",
+  "app.friends": "Znajomi",
+  "app.register": "Rejestracja",
+  "app.login": "Logowanie",
+  "app.splash": "Splash",
+  "app.profile": "Profil",
+  "app.video-call": "Połączenie video",
+  "app.call": "Połączenie głosowe",
+  "app.forgotten_password": "Resetuj hasło",
+  "app.notifications": "Powiadomienia",
 };
 
 export enum APP_ROUTE_NAMES {

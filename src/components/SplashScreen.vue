@@ -13,7 +13,7 @@ const { requestPermission } = useNotificationService();
 
 const hideSplashScreen = () => {
   router.replace({
-    name: APP_ROUTE_NAMES.CHATS,
+    name: APP_ROUTE_NAMES.INDEX,
     query,
   });
   if (splashScreenTimeout.value) {

@@ -40,10 +40,3 @@ app
     modules: [VueFireAuth()],
   })
   .mount("#app");
-
-router.replace({
-  name: "app.splash",
-  query: {
-    nextPage: (router.currentRoute.value.name as string) ?? "app.chats",
-  },
-});

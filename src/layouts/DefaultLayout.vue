@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { APP_ROUTE_NAMES, NAVIGATION, NAVIGATION_EMITS } from "@/constants";
+import { APP_ROUTE_NAMES, NAVIGATION_EMITS } from "@/constants";
 import { useRequests } from "@/services/users-service";
-import { getFirstCapital } from "@/utils";
+import { getCapitalTitle } from "@/utils";
 import {
   IconPhone,
   IconMessage,
@@ -18,16 +18,16 @@ import { useFirebaseAuth } from "vuefire";
 const emits = defineEmits<{
   (
     e: NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW,
-    actualView: NAVIGATION
+    actualView: APP_ROUTE_NAMES
   ): void | Promise<void>;
 }>();
 
 withDefaults(
   defineProps<{
-    actualView?: NAVIGATION;
+    actualView?: APP_ROUTE_NAMES;
   }>(),
   {
-    actualView: NAVIGATION.CHATS,
+    actualView: APP_ROUTE_NAMES.CHATS,
   }
 );
 
@@ -40,7 +40,7 @@ watchEffect(() => {
 });
 
 const handleGoToNofitications = async () => {
-  emits(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, NAVIGATION.NOTIFICATIONS);
+  emits(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, APP_ROUTE_NAMES.NOTIFICATIONS);
 };
 
 const handleSignOut = async () => {
@@ -65,7 +65,7 @@ const handleSignOut = async () => {
             <IconUser class="text-[#121212] scale-[110%]" />
           </button>
           <h1 class="font-extrabold text-3xl ml-2">
-            {{ getFirstCapital(actualView) }}
+            {{ getCapitalTitle(actualView) }}
           </h1>
         </div>
         <button
@@ -85,47 +85,57 @@ const handleSignOut = async () => {
     <nav class="flex h-[10%]">
       <button
         class="w-full h-full flex items-center justify-center p-2"
-        @click="$emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, NAVIGATION.CHATS)"
+        @click="
+          $emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, APP_ROUTE_NAMES.CHATS)
+        "
       >
         <IconMessage
           class="text-white scale-[200%] rounded-full p-1"
-          :class="{ active: actualView === NAVIGATION.CHATS }"
+          :class="{ active: actualView === APP_ROUTE_NAMES.CHATS }"
         />
       </button>
       <button
         class="w-full h-full flex items-center justify-center p-2"
-        @click="$emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, NAVIGATION.FRIENDS)"
+        @click="
+          $emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, APP_ROUTE_NAMES.FRIENDS)
+        "
       >
         <IconUsers
           class="text-white scale-[200%] rounded-full p-1"
-          :class="{ active: actualView === NAVIGATION.FRIENDS }"
+          :class="{ active: actualView === APP_ROUTE_NAMES.FRIENDS }"
         />
       </button>
       <button
         class="w-full h-full flex items-center justify-center p-2"
-        @click="$emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, NAVIGATION.TEAMS)"
+        @click="
+          $emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, APP_ROUTE_NAMES.TEAMS)
+        "
       >
         <IconAffiliate
           class="text-white scale-[200%] rounded-full p-1"
-          :class="{ active: actualView === NAVIGATION.TEAMS }"
+          :class="{ active: actualView === APP_ROUTE_NAMES.TEAMS }"
         />
       </button>
       <button
         class="w-full h-full flex items-center justify-center p-2"
-        @click="$emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, NAVIGATION.CALLS)"
+        @click="
+          $emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, APP_ROUTE_NAMES.CALLS)
+        "
       >
         <IconPhone
           class="text-white scale-[200%] rounded-full p-1"
-          :class="{ active: actualView === NAVIGATION.CALLS }"
+          :class="{ active: actualView === APP_ROUTE_NAMES.CALLS }"
         />
       </button>
       <button
         class="w-full h-full flex items-center justify-center p-2"
-        @click="$emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, NAVIGATION.SETTINGS)"
+        @click="
+          $emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, APP_ROUTE_NAMES.SETTINGS)
+        "
       >
         <IconSettings
           class="text-white scale-[200%] rounded-full p-1"
-          :class="{ active: actualView === NAVIGATION.SETTINGS }"
+          :class="{ active: actualView === APP_ROUTE_NAMES.SETTINGS }"
         />
       </button>
     </nav>

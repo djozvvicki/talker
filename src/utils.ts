@@ -1,8 +1,15 @@
 import { FirebaseError } from "firebase/app";
-import { API_STATUSES, FIREBASE_AUTH_ERRORS } from "./constants";
+import {
+  API_STATUSES,
+  APP_ROUTE_NAMES,
+  APP_ROUTE_TITLES,
+  FIREBASE_AUTH_ERRORS,
+} from "./constants";
 import useWorkerCommunicationService from "./services/worker-communication-service";
-export const getFirstCapital = (text: string) => {
-  return text.charAt(0).toUpperCase() + text.slice(1);
+export const getCapitalTitle = (appRouteName: APP_ROUTE_NAMES) => {
+  const routeLabel = APP_ROUTE_TITLES[appRouteName];
+
+  return routeLabel.charAt(0).toUpperCase() + routeLabel.slice(1);
 };
 
 export const useAuthErrorHandler = async (
