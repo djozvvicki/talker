@@ -118,11 +118,11 @@ self.addEventListener("notificationclick", (event) => {
         for (let i = 0; i < clientList.length; i++) {
           let client = clientList[i];
           if (client.url.includes("/app") && "focus" in client) {
+            client.focus();
             bc.postMessage({
               type: "CHANGE_VIEW",
               newPage: "app.notifications",
             });
-            client.focus();
           }
           return;
         }
