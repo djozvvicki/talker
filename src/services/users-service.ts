@@ -1,5 +1,6 @@
 import {
   collection,
+  doc,
   getDocs,
   onSnapshot,
   query,
@@ -8,7 +9,7 @@ import {
 import { ref } from "vue";
 import { useCurrentUser } from "vuefire";
 import { db } from "@services/firebase";
-import useNotificationService from "./notifications-service";
+// import useNotificationService from "./notifications-service";
 
 const useUsers = () => {
   const usersList = ref<IUser[]>([]);
@@ -39,39 +40,38 @@ export const useRequests = (
 ) => {
   const currentUser = useCurrentUser();
   const requests = ref([] as IRequest[]);
-  const { showNotification, requestPermission } = useNotificationService();
+  // const { showNotification, requestPermission } = useNotificationService();
 
   if (currentUser.value) {
     const q = query(collection(db, "users", currentUser.value.uid, "requests"));
 
     onSnapshot(q, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
-        console.log(change.doc.data());
         const { newIndex, oldIndex, doc, type } = change;
         const request = doc.data() as IRequest;
 
         if (type === "added") {
           if (!request.isNotified && !request.isReaded && showNotifications) {
-            requestPermission();
-            showNotification(request.type, {
-              icon: "/talker.svg",
-              body: `${request.from.name} ${request.message}`,
-              data: {
-                requestID: request.id,
-                requestType: request.type,
-                requestFromID: request.from.authID,
-              },
-              actions: [
-                {
-                  action: "decline",
-                  title: "Decline",
-                },
-                {
-                  action: "accept",
-                  title: "Accept",
-                },
-              ],
-            });
+            // requestPermission();
+            // showNotification(request.type, {
+            //   icon: "/talker.svg",
+            //   body: `${request.from.name} ${request.message}`,
+            //   data: {
+            //     requestID: request.id,
+            //     requestType: request.type,
+            //     requestFromID: request.from.authID,
+            //   },
+            //   actions: [
+            //     {
+            //       action: "decline",
+            //       title: "Decline",
+            //     },
+            //     {
+            //       action: "accept",
+            //       title: "Accept",
+            //     },
+            //   ],
+            // });
           }
 
           requests.value.splice(newIndex, 0, request);
@@ -107,6 +107,18 @@ export const setReadedRequests = async (userAuthID: string) => {
   await Promise.all(
     requestPromises.map(async (requestPromise) => await requestPromise())
   );
+};
+
+export const sendUserToken = async (token: string) => {
+  const currentUser = useCurrentUser();
+
+  if (currentUser.value) {
+    const docRef = doc(db, "users", currentUser.value.uid);
+
+    await updateDoc(docRef, {
+      notificationToken: token,
+    });
+  }
 };
 
 export default useUsers;

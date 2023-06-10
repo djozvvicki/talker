@@ -1,5 +1,6 @@
 import { FirebaseError } from "firebase/app";
 import { API_STATUSES, FIREBASE_AUTH_ERRORS } from "./constants";
+import useWorkerCommunicationService from "./services/worker-communication-service";
 export const getFirstCapital = (text: string) => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
@@ -58,20 +59,17 @@ export const getFieldFromErrorCode = (errCode: string) => {
 };
 
 export function initSW() {
+  const { bc } = useWorkerCommunicationService();
+
   window.addEventListener("load", async () => {
     if ("serviceWorker" in navigator) {
-      const messageChannel = new MessageChannel();
-
       await navigator.serviceWorker.register("/talker-sw.js", {
         type: "classic",
       });
 
-      await navigator.serviceWorker.controller?.postMessage(
-        {
-          type: "INIT_COMMUNICATION",
-        },
-        [messageChannel.port2]
-      );
+      bc.postMessage({
+        type: "INIT_COMMUNICATION",
+      });
     }
   });
 }

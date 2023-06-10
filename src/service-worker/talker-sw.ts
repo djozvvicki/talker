@@ -8,20 +8,16 @@ import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw";
 import config from "@services/firebase/config";
 import { getToken } from "firebase/messaging";
 
-let communication: MessagePort | undefined;
+const bc = new BroadcastChannel("talker-sw");
 const app = initializeApp(config);
 const messaging = getMessaging(app);
 
 onBackgroundMessage(messaging, (payload) => {
-  console.log(
-    "[firebase-messaging-sw.js] Received background message ",
-    payload
-  );
+  console.log(" Received background message ", payload);
   // Customize notification here
   const notificationTitle = "Background Message Title";
   const notificationOptions = {
     body: "Background Message body.",
-    icon: "/firebase-logo.png",
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
@@ -88,7 +84,7 @@ self.addEventListener("activate", async () => {
       "BOF-yJZi4d8yVCVRkD6lvrviRbMObr7fHl5ma2IyJzjDC4-Ecr9_FGJsDTloNVuETMQUqH7MVEoXfV3MkGg5yO4",
   });
 
-  communication?.postMessage({
+  bc.postMessage({
     type: "TOKEN_DOWNLOAD",
     token,
   });
@@ -103,6 +99,16 @@ self.addEventListener("notificationclick", (event) => {
   print("groupEnd", []);
 });
 
+bc.onmessage = (ev) => {
+  if (ev.data?.type === "INIT_COMMUNICATION") {
+    print("log", ["Communication initialized"]);
+
+    bc.postMessage({
+      type: "Communication initialized",
+    });
+  }
+};
+
 self.addEventListener("message", (event) => {
   const eventData = event.data;
 
@@ -110,9 +116,5 @@ self.addEventListener("message", (event) => {
     print("groupCollapsed", ["Message send!"]);
     print("log", [`Action -> ${eventData.type ?? "empty"}`, eventData]);
     print("groupEnd", []);
-
-    if (eventData.type === "INIT_COMMUNICATION") {
-      communication = event.ports[0];
-    }
   }
 });

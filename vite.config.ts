@@ -31,6 +31,7 @@ export default defineConfig({
       },
       workbox: {
         globIgnores: ["**/node_modules/**/*", "talker-sw.js"],
+        sourcemap: true,
       },
       scope: "/",
       srcDir: "src/service-worker",

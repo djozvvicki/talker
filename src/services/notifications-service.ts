@@ -5,13 +5,14 @@ const useNotificationService = () => {
     }
   };
 
-  const showNotification = async (title: string, body: NotificationOptions) => {
-    const reg = await navigator.serviceWorker.ready;
+  const showNotification =
+    async (/*title: string, body: NotificationOptions */) => {
+      const reg = await navigator.serviceWorker.ready;
 
-    if (reg) {
-      // reg.showNotification(title, body);
-    }
-  };
+      if (reg) {
+        // reg.showNotification(title, body);
+      }
+    };
 
   return {
     requestPermission,
