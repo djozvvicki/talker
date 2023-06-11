@@ -2,35 +2,26 @@
 import Avatar from "@/components/Avatar.vue";
 import SearchInput from "@/components/SearchInput.vue";
 import UsersModal from "@/components/modals/UsersModal.vue";
-import useUsers from "@/services/users-service";
+import useFriendsService from "@/services/friends-service";
 import { IconPlus, IconUsers, IconAlertTriangle } from "@tabler/icons-vue";
-import { ref, watchEffect } from "vue";
-import { useCurrentUser } from "vuefire";
+import { onMounted, ref } from "vue";
 
-const currentUser = useCurrentUser();
-const friends = ref<IUser[]>([]);
-const users = ref<IUser[]>([]);
 const usersModalRef = ref();
-
-watchEffect(() => {
-  users.value = useUsers();
-});
-
-watchEffect(() => {
-  friends.value =
-    users.value.find((user) => user.authID === currentUser.value?.uid)
-      ?.friends ?? [];
-});
+const { friends, initFriendsListener } = useFriendsService();
 
 const openUsersModal = () => {
   if (usersModalRef.value) {
     usersModalRef.value.openModal();
   }
 };
+
+onMounted(() => {
+  initFriendsListener();
+});
 </script>
 
 <template>
-  <div class="relative w-full h-[90%] rounded-b-[70px] p-3">
+  <div class="relative w-full h-[90%] overflow-hidden rounded-b-[70px] p-3">
     <SearchInput />
     <div class="h-full rounded-b-[70px]">
       <div class="w-full flex items-center justify-between mt-4">
@@ -38,20 +29,20 @@ const openUsersModal = () => {
           <IconUsers />
           <h2 class="text-md font-medium ml-2">Wszyscy znajomi</h2>
         </div>
-        <span v-if="friends && friends.length > 0" class="font-bold">{{
+        <span v-if="friends.length > 0" class="font-bold">{{
           friends.length
         }}</span>
       </div>
-      <template v-if="friends && friends.length > 0">
-        <ul class="h-full">
-          <div class="overflow-scroll h-full pb-3 mt-3">
+      <template v-if="friends.length > 0">
+        <ul class="flex h-[calc(90%-1rem)]">
+          <div class="overflow-scroll h-full w-full pb-5 mt-2">
             <li
-              class="flex mb-2 p-2 items-center justify-between rounded-full bg-[#12121207]"
+              class="flex w-full mb-1 p-2 items-center justify-between rounded-full bg-[#12121207]"
               v-for="friend in friends"
               :key="friend.id"
             >
               <div class="flex items-center">
-                <template v-if="friend.photoURL"></template>
+                <template v-if="friend.profilePicture"></template>
                 <template v-else>
                   <Avatar buttonClass="w-10 h-10" />
                 </template>

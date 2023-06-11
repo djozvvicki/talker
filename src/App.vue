@@ -2,14 +2,13 @@
 import { initSW } from "@/utils";
 import { onMounted } from "vue";
 import useWorkerCommunicationService from "@services/worker-communication-service";
-
-const { initMessageListener } = useWorkerCommunicationService();
+const { initSWMessageListener } = useWorkerCommunicationService();
 
 onMounted(() => {
   if (import.meta.env.MODE !== "development") {
     initSW();
+    initSWMessageListener();
   }
-  initMessageListener();
 });
 </script>
 

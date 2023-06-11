@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { API_STATUSES, APP_ROUTE_NAMES } from "@/constants";
+import type { ICreateAccountError } from "@/types";
 import { useAuthErrorHandler } from "@/utils";
 import Talker from "@assets/talker.svg";
 import { IconLogin } from "@tabler/icons-vue";
@@ -13,11 +14,10 @@ import { useFirebaseAuth } from "vuefire";
 const auth = useFirebaseAuth();
 const route = useRoute();
 const router = useRouter();
-
 const email = ref<string>("");
 const password = ref<string>("");
 const isLoggingIn = ref<boolean>(false);
-const error = ref<LoginError | null>(null);
+const error = ref<ICreateAccountError | null>(null);
 
 const handleLogin = async () => {
   if (auth) {

@@ -1,12 +1,12 @@
+import useGeneralStore from "@store/general-store";
 import useLoggerService from "@services/logger-service";
 import { sendClientToken } from "@services/users-service";
 import useNotificationsService from "@services/notifications-service";
 import { APP_ROUTE_NAMES } from "@/constants";
-import useViewsService from "./views-service";
 
 const useWorkerCommunicationService = () => {
   const bc = new BroadcastChannel("talker-sw");
-  const { handleViewChange } = useViewsService();
+  const generalStore = useGeneralStore();
   const { setNotifiedNotification } = useNotificationsService();
   const { print } = useLoggerService();
 
@@ -14,7 +14,7 @@ const useWorkerCommunicationService = () => {
     await sendClientToken(token);
   };
 
-  const initMessageListener = () => {
+  const initSWMessageListener = () => {
     print("log", ["Initialize message listener!"]);
 
     bc.onmessage = async (ev) => {
@@ -24,7 +24,9 @@ const useWorkerCommunicationService = () => {
             handleSendToken(ev.data.token as string);
             break;
           case "CHANGE_VIEW":
-            handleViewChange(ev.data.newPage as APP_ROUTE_NAMES.NOTIFICATIONS);
+            generalStore.setActualView(
+              ev.data.newPage as APP_ROUTE_NAMES.NOTIFICATIONS
+            );
             break;
           case "SET_NOTIFIED_NOTIFICATION":
             await setNotifiedNotification(ev.data.requestID as string);
@@ -38,7 +40,7 @@ const useWorkerCommunicationService = () => {
 
   return {
     bc,
-    initMessageListener,
+    initSWMessageListener,
   };
 };
 

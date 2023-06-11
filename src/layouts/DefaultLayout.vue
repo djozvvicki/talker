@@ -1,10 +1,12 @@
 <script lang="ts" setup>
-import Avatar from "@/components/Avatar.vue";
-import { APP_ROUTE_NAMES, NAVIGATION_EMITS } from "@/constants";
-import useNotificationService from "@/services/notifications-service";
-import { useRequests } from "@/services/users-service";
-import useWorkerCommunicationService from "@/services/worker-communication-service";
+import { onMounted } from "vue";
+import { useFirebaseAuth } from "vuefire";
 import { getCapitalTitle } from "@/utils";
+import Avatar from "@/components/Avatar.vue";
+import { APP_ROUTE_NAMES } from "@/constants";
+import useNotificationService from "@/services/notifications-service";
+import useWorkerCommunicationService from "@/services/worker-communication-service";
+import useGeneralStore from "@/store/general-store";
 import {
   IconPhone,
   IconMessage,
@@ -14,39 +16,20 @@ import {
   IconAffiliate,
   IconBellFilled,
 } from "@tabler/icons-vue";
-import { Ref, onMounted, ref, watchEffect } from "vue";
-import { useRouter } from "vue-router";
-import { useFirebaseAuth } from "vuefire";
 
 const auth = useFirebaseAuth();
-const router = useRouter();
-const requests: Ref<IRequest[]> = ref([]);
+const generalStore = useGeneralStore();
+const { notifications, initNotificationListener } = useNotificationService();
 const { bc } = useWorkerCommunicationService();
-const { initNotificationListener } = useNotificationService();
-
-const emits = defineEmits<{
-  (
-    e: NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW,
-    actualView: APP_ROUTE_NAMES
-  ): void | Promise<void>;
-}>();
-
-defineProps<{
-  actualView: APP_ROUTE_NAMES;
-}>();
-
-watchEffect(() => {
-  requests.value = useRequests(false) as IRequest[];
-});
 
 const handleGoToNofitications = async () => {
-  emits(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, APP_ROUTE_NAMES.NOTIFICATIONS);
+  generalStore.setActualView(APP_ROUTE_NAMES.NOTIFICATIONS);
 };
 
 const handleSignOut = async () => {
   if (auth) {
     await auth.signOut();
-    router.replace({ name: APP_ROUTE_NAMES.LOGIN });
+    generalStore.setActualView(APP_ROUTE_NAMES.LOGIN);
   }
 };
 
@@ -68,7 +51,7 @@ onMounted(() => {
         <div class="flex items-center">
           <Avatar @handleClick="handleSignOut" />
           <h1 class="font-extrabold text-3xl ml-2">
-            {{ getCapitalTitle(actualView) }}
+            {{ getCapitalTitle(generalStore.actualView) }}
           </h1>
         </div>
         <button
@@ -76,12 +59,15 @@ onMounted(() => {
           @click="handleGoToNofitications"
         >
           <IconBell
-            v-if="$route.name !== APP_ROUTE_NAMES.NOTIFICATIONS"
-            class="text-[#121212] scale-[200%] rounded-full p-1"
+            v-if="generalStore.actualView !== APP_ROUTE_NAMES.NOTIFICATIONS"
+            class="text-[#121212] scale-[200%] rounded-full p-1 bg-[#12121207]"
           />
-          <IconBellFilled v-else />
+          <IconBellFilled
+            v-else
+            class="text-[#121212] scale-[200%] rounded-full p-1 bg-[#12121207]"
+          />
           <span
-            v-if="requests.some(({ isReaded }) => isReaded === 'no')"
+            v-if="notifications.some(({ isReaded }) => isReaded !== false)"
             class="w-2 h-2 absolute top-1 right-1 bg-[#ff0000] rounded-full"
           ></span>
         </button>
@@ -91,57 +77,51 @@ onMounted(() => {
     <nav class="flex h-[10%]">
       <button
         class="w-full h-full flex items-center justify-center p-2"
-        @click="
-          $emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, APP_ROUTE_NAMES.CHATS)
-        "
+        @click="generalStore.setActualView(APP_ROUTE_NAMES.CHATS)"
       >
         <IconMessage
           class="text-white scale-[200%] rounded-full p-1"
-          :class="{ active: actualView === APP_ROUTE_NAMES.CHATS }"
+          :class="{ active: generalStore.actualView === APP_ROUTE_NAMES.CHATS }"
         />
       </button>
       <button
         class="w-full h-full flex items-center justify-center p-2"
-        @click="
-          $emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, APP_ROUTE_NAMES.FRIENDS)
-        "
+        @click="generalStore.setActualView(APP_ROUTE_NAMES.FRIENDS)"
       >
         <IconUsers
           class="text-white scale-[200%] rounded-full p-1"
-          :class="{ active: actualView === APP_ROUTE_NAMES.FRIENDS }"
+          :class="{
+            active: generalStore.actualView === APP_ROUTE_NAMES.FRIENDS,
+          }"
         />
       </button>
       <button
         class="w-full h-full flex items-center justify-center p-2"
-        @click="
-          $emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, APP_ROUTE_NAMES.TEAMS)
-        "
+        @click="generalStore.setActualView(APP_ROUTE_NAMES.TEAMS)"
       >
         <IconAffiliate
           class="text-white scale-[200%] rounded-full p-1"
-          :class="{ active: actualView === APP_ROUTE_NAMES.TEAMS }"
+          :class="{ active: generalStore.actualView === APP_ROUTE_NAMES.TEAMS }"
         />
       </button>
       <button
         class="w-full h-full flex items-center justify-center p-2"
-        @click="
-          $emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, APP_ROUTE_NAMES.CALLS)
-        "
+        @click="generalStore.setActualView(APP_ROUTE_NAMES.CALLS)"
       >
         <IconPhone
           class="text-white scale-[200%] rounded-full p-1"
-          :class="{ active: actualView === APP_ROUTE_NAMES.CALLS }"
+          :class="{ active: generalStore.actualView === APP_ROUTE_NAMES.CALLS }"
         />
       </button>
       <button
         class="w-full h-full flex items-center justify-center p-2"
-        @click="
-          $emit(NAVIGATION_EMITS.CHANGE_ACTUAL_VIEW, APP_ROUTE_NAMES.SETTINGS)
-        "
+        @click="generalStore.setActualView(APP_ROUTE_NAMES.SETTINGS)"
       >
         <IconSettings
           class="text-white scale-[200%] rounded-full p-1"
-          :class="{ active: actualView === APP_ROUTE_NAMES.SETTINGS }"
+          :class="{
+            active: generalStore.actualView === APP_ROUTE_NAMES.SETTINGS,
+          }"
         />
       </button>
     </nav>

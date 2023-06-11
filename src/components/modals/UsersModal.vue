@@ -1,36 +1,23 @@
 <script lang="ts" setup>
-import { createFriendRequest } from "@/services/friends-service";
+import useFriendsService from "@/services/friends-service";
 import Modal from "@components/modals/Modal.vue";
 import SearchInput from "@components/SearchInput.vue";
-import useUsers from "@services/users-service";
-import { IconUsers, IconArrowLeft, IconPlus } from "@tabler/icons-vue";
-import { computed, ref, watchEffect } from "vue";
-import { useCurrentUser } from "vuefire";
+import { IconUsers, IconArrowLeft } from "@tabler/icons-vue";
+import { computed, onMounted, ref } from "vue";
 import Avatar from "../Avatar.vue";
+import { IUser } from "@/types";
+import useUsersService from "@/services/users-service";
 
 const isVisible = ref<boolean>(false);
-const currentUser = useCurrentUser();
-
-const users = ref(useUsers());
-
-watchEffect(() => {
-  users.value = useUsers();
-});
+const { usersList, initUsersListener } = useUsersService();
+const { friends, createFriendRequest } = useFriendsService();
 
 const openModal = () => {
   isVisible.value = true;
 };
 
 const handleCreateFriendRequest = async (selectedUser: IUser) => {
-  if (currentUser.value) {
-    const actualUser = users.value.find(
-      (user) => user.authID === currentUser.value?.uid
-    );
-
-    if (actualUser) {
-      await createFriendRequest(actualUser, selectedUser);
-    }
-  }
+  await createFriendRequest(selectedUser);
 };
 
 const closeModal = () => {
@@ -38,9 +25,16 @@ const closeModal = () => {
 };
 
 const sortedUsers = computed(() => {
-  return users.value.sort((a, b) => (a.nick < b.nick ? 1 : -1));
+  return usersList.value
+    .sort((a, b) => (a.nick < b.nick ? 1 : -1))
+    .filter((user) => {
+      return !friends.value.find((friend) => friend.authID === user.authID);
+    });
 });
 
+onMounted(() => {
+  initUsersListener();
+});
 defineExpose({ openModal });
 </script>
 <template>
@@ -62,7 +56,7 @@ defineExpose({ openModal });
             :key="user.id"
           >
             <div class="flex items-center">
-              <template v-if="user.photoURL"></template>
+              <template v-if="user.profilePicture"></template>
               <template v-else>
                 <Avatar buttonClass="w-10 h-10" />
               </template>
@@ -78,10 +72,10 @@ defineExpose({ openModal });
               </p>
             </div>
             <button
-              class="w-10 h-10 add-button flex items-center justify-center"
+              class="bg-[#12121207] rounded-md p-1 pl-3 pr-3 mr-3 flex items-center justify-center"
               @click="handleCreateFriendRequest(user)"
             >
-              <IconPlus class="text-[#121212] scale-[125%]" />
+              Invite
             </button>
           </li>
         </div>
@@ -98,6 +92,7 @@ defineExpose({ openModal });
         <SearchInput class="w-[calc(100%-4rem)]" />
         <button
           class="rounded-full ml-2 w-12 h-12 flex items-center justify-center bg-[#12121207]"
+          @click="closeModal"
         >
           <IconArrowLeft />
         </button>

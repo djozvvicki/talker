@@ -5517,20 +5517,20 @@ const aa = () => {
     error: "#c0392b",
     groupCollapsed: "#3498db",
     groupEnd: null
-    // No colored prefix on groupEnd
   };
   return { print: function(r, s) {
-    if (r === "groupCollapsed" && /^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-      console[r](...s);
-      return;
-    }
     const o = [
       `background: ${t[r]}`,
       "border-radius: 0.5em",
       "color: white",
       "font-weight: bold",
       "padding: 2px 0.5em"
-    ], i = e ? [] : ["%cTalker", o.join(";")];
+    ];
+    if (r === "groupCollapsed" && /^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+      console[r](...s);
+      return;
+    }
+    const i = e ? [] : ["%cTalker", o.join(";")];
     console[r](...i, ...s), r === "groupCollapsed" && (e = !0), r === "groupEnd" && (e = !1);
   } };
 }, { print: f } = aa();
@@ -5566,21 +5566,24 @@ self.addEventListener("activate", async () => {
 });
 const ne = new BroadcastChannel("talker-sw"), da = Ft(Ei), Tn = _i(da);
 Ii(Tn, async (e) => {
-  f("log", ["Background message received!"]), e.data && (self.registration.showNotification(`${e.data.message}`, {
-    tag: e.data.type,
-    icon: "/talker.svg",
-    image: e.data.fromProfilePicture.length > 0 ? e.data.fromProfilePicture : "",
-    actions: [
-      {
-        action: "decline",
-        title: "Decline"
-      },
-      {
-        action: "accept",
-        title: "Accept"
-      }
-    ]
-  }), ne.postMessage({
+  f("log", ["Background message received!"]), e.data && (self.registration.showNotification(
+    `${e.data.fromName} ${e.data.message}`,
+    {
+      tag: e.data.type,
+      icon: "/talker.svg",
+      image: e.data.fromProfilePicture.length > 0 ? e.data.fromProfilePicture : "",
+      actions: [
+        {
+          action: "decline",
+          title: "Decline"
+        },
+        {
+          action: "accept",
+          title: "Accept"
+        }
+      ]
+    }
+  ), ne.postMessage({
     type: "SET_NOTIFIED_NOTIFICATION",
     requestID: e.data.requestID
   }), f("groupCollapsed", ["BG message payload"]), f("log", [e.data]), f("groupEnd", []));

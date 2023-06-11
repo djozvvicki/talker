@@ -1,16 +1,25 @@
 export const SPLASH_SCREEN_TIME = 2500;
 
-export enum NAVIGATION {
-  CALLS = "calls",
-  CHATS = "chats",
-  SETTINGS = "settings",
-  TEAMS = "teams",
-  FRIENDS = "friends",
-  NOTIFICATIONS = "notifications",
+export enum NOTIFICATION_TYPES {
+  FRIEND_REQUEST = "FRIEND_REQUEST",
+  DECLINED_FRIEND_REQUEST = "DECLINED_FRIEND_REQUEST",
+  ACCEPTED_FRIEND_REQUEST = "ACCEPTED_FRIEND_REQUEST",
+  TEXT_MESSAGE = "TEXT_MESSAGE",
+  VOICE_MESSAGE = "VOICE_MESSAGE",
+  FILE_MESSAGE = "FILE_MESSAGE",
+  VIDEO_MESSAGE = "VIDEO_MESSAGE",
+  EMOJI_MESSAGE = "EMOJI_MESSAGE",
+  BUY_COFFEE = "BUY_COFFEE",
 }
 
-export enum NAVIGATION_EMITS {
-  CHANGE_ACTUAL_VIEW = "changeActualView",
+export enum FIRESTORE_COLLECTION_NAMES {
+  USERS = "users",
+  CLIENT_TOKENS = "clientTokens",
+  NOTIFICATIONS = "notifications",
+  CHATS = "chats",
+  MESSAGES = "messages",
+  FRIENDS = "friends",
+  TEAMS = "teams",
 }
 
 export const APP_ROUTE_TITLES = {

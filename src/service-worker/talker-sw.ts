@@ -70,24 +70,27 @@ onBackgroundMessage(messaging, async (payload) => {
   print("log", ["Background message received!"]);
 
   if (payload.data) {
-    self.registration.showNotification(`${payload.data.message}`, {
-      tag: payload.data.type,
-      icon: "/talker.svg",
-      image:
-        payload.data.fromProfilePicture.length > 0
-          ? payload.data.fromProfilePicture
-          : "",
-      actions: [
-        {
-          action: "decline",
-          title: "Decline",
-        },
-        {
-          action: "accept",
-          title: "Accept",
-        },
-      ],
-    });
+    self.registration.showNotification(
+      `${payload.data.fromName} ${payload.data.message}`,
+      {
+        tag: payload.data.type,
+        icon: "/talker.svg",
+        image:
+          payload.data.fromProfilePicture.length > 0
+            ? payload.data.fromProfilePicture
+            : "",
+        actions: [
+          {
+            action: "decline",
+            title: "Decline",
+          },
+          {
+            action: "accept",
+            title: "Accept",
+          },
+        ],
+      }
+    );
 
     bc.postMessage({
       type: "SET_NOTIFIED_NOTIFICATION",

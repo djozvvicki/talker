@@ -1,70 +1,65 @@
 <script lang="ts" setup>
 import Avatar from "@/components/Avatar.vue";
-import { useRequests, setReadedRequests } from "@/services/users-service";
 import { IconAlertTriangle } from "@tabler/icons-vue";
 import { onMounted, ref, watchEffect } from "vue";
-import { useCurrentUser } from "vuefire";
-import useLoggerService from "@/services/logger-service";
-import {
-  acceptUserRequest,
-  declineUserRequest,
-} from "@/services/friends-service";
+import useFriendsService from "@/services/friends-service";
+import useNotificationService from "@/services/notifications-service";
+import { IFriendRequestNotification, IUser } from "@/types";
+import { DocumentReference } from "firebase/firestore";
 
-const { print } = useLoggerService();
-const currentUser = useCurrentUser();
-const requests = ref<IRequest[]>([]);
-const clickedRequests = ref<{ clicked: boolean }[]>(
-  requests.value.map(() => ({
+const { acceptFriendRequest, declineFriendRequest } = useFriendsService();
+const { notifications, setReadedNotifications, initNotificationListener } =
+  useNotificationService();
+
+const clickedNotifications = ref<{ clicked: boolean }[]>(
+  notifications.value.map(() => ({
     clicked: false,
   }))
 );
 
 const showNotificationDetails = (elementIndex: number) => {
-  clickedRequests.value[elementIndex].clicked =
-    !clickedRequests.value[elementIndex].clicked;
+  clickedNotifications.value[elementIndex].clicked =
+    !clickedNotifications.value[elementIndex].clicked;
 };
 
 watchEffect(() => {
-  requests.value = useRequests(false) as IRequest[];
-});
-
-watchEffect(() => {
-  clickedRequests.value = requests.value.map(() => ({
+  clickedNotifications.value = notifications.value.map(() => ({
     clicked: false,
   }));
 });
 
-const acceptRequest = async (requestID: string, requestFromAuthID: string) => {
-  acceptUserRequest(requestID, requestFromAuthID);
-  print("log", ["Accepted request:", requestID]);
+const acceptRequest = async (
+  requestID: string,
+  fromRef: DocumentReference<IUser>
+) => {
+  acceptFriendRequest(requestID, fromRef);
 };
 const declineRequest = async (requestID: string) => {
-  declineUserRequest(requestID);
-
-  print("log", ["Declined request:", requestID]);
+  declineFriendRequest(requestID);
 };
 
 onMounted(async () => {
-  if (currentUser.value) {
-    await setReadedRequests(currentUser.value.uid);
-  }
+  initNotificationListener();
+  setReadedNotifications();
 });
 </script>
 
 <template>
   <div class="relative w-full h-[90%] overflow-hidden rounded-b-[70px] p-3">
     <div class="h-full rounded-b-[70px]">
-      <template v-if="requests.length > 0">
-        <ul class="flex flex-col-reverse w-full h-full">
-          <div class="overflow-scroll w-full h-full pb- mt-2">
+      <template v-if="notifications.length > 0">
+        <ul class="flex h-full">
+          <div class="overflow-scroll w-full h-full pb-5 mt-2">
             <li
               class="flex w-full p-2 items-center mb-1 rounded-full bg-[#12121207]"
-              v-for="(request, index) in requests"
-              :key="request.id"
+              v-for="(notification, index) in notifications"
+              :key="notification.id"
               @click.stop="showNotificationDetails(index)"
             >
               <div class="flex w-full h-full">
-                <template v-if="request.fromProfilePicture"></template>
+                <template
+                  v-if="(notification as IFriendRequestNotification).icon"
+                ></template>
                 <template v-else>
                   <Avatar />
                 </template>
@@ -72,25 +67,30 @@ onMounted(async () => {
                   class="ml-2 flex w-[calc(100%-3rem)] flex-col justify-center font-medium text-[#12121299] text-xl"
                 >
                   <span class="m-0 text-[1rem] text-[#121212]">
-                    {{ ` ${request.message}` }}
+                    {{ ` ${notification.message}` }}
                   </span>
                   <Transition name="collapse">
                     <div
                       v-if="
-                        request.type === 'FRIEND_REQUEST' &&
-                        clickedRequests[index].clicked
+                        notification.type === 'FRIEND_REQUEST' &&
+                        clickedNotifications[index].clicked
                       "
                       class="flex justify-center m-0 p-0 text-sm"
                     >
                       <button
                         class="bg-[red] p-1 rounded-xl pl-3 pr-3 text-white mr-2"
-                        @click="declineRequest(request.id)"
+                        @click="declineRequest(notification.id)"
                       >
                         Decline
                       </button>
                       <button
                         class="bg-[#121212] p-1 rounded-xl pl-3 pr-3 text-white mr-2"
-                        @click="acceptRequest(request.id, request.fromAuthID)"
+                        @click="
+                          acceptRequest(
+                            notification.id,
+                            (notification as IFriendRequestNotification).from
+                          )
+                        "
                       >
                         Accept
                       </button>
