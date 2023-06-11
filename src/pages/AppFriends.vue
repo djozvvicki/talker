@@ -3,7 +3,12 @@ import Avatar from "@/components/Avatar.vue";
 import SearchInput from "@/components/SearchInput.vue";
 import UsersModal from "@/components/modals/UsersModal.vue";
 import useFriendsService from "@/services/friends-service";
-import { IconPlus, IconUsers, IconAlertTriangle } from "@tabler/icons-vue";
+import {
+  IconPlus,
+  IconUsers,
+  IconAlertTriangle,
+  IconSend,
+} from "@tabler/icons-vue";
 import { onMounted, ref } from "vue";
 
 const usersModalRef = ref();
@@ -42,7 +47,9 @@ onMounted(() => {
               :key="friend.id"
             >
               <div class="flex items-center">
-                <template v-if="friend.profilePicture"></template>
+                <template v-if="friend.profilePicture">
+                  <Avatar :img="friend.profilePicture" />
+                </template>
                 <template v-else>
                   <Avatar buttonClass="w-10 h-10" />
                 </template>
@@ -56,6 +63,11 @@ onMounted(() => {
                     {{ friend.nick }}
                   </span>
                 </p>
+              </div>
+              <div
+                class="flex items-center justify-center bg-[#121212] rounded-full w-10 h-10"
+              >
+                <IconSend class="scale-[90%] text-white" />
               </div>
             </li>
           </div>

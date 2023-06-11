@@ -4,6 +4,7 @@ import { IconUser } from "@tabler/icons-vue";
 const props = defineProps<{
   iconClass?: string;
   buttonClass?: string;
+  img?: string;
 }>();
 
 defineEmits<{
@@ -17,6 +18,12 @@ defineEmits<{
     :class="buttonClass"
     @click="(e) => $emit('handleClick', e)"
   >
-    <IconUser class="text-white" :class="props.iconClass" />
+    <img
+      v-if="props.img"
+      class="w-full h-full rounded-full"
+      :src="props.img"
+      alt="Avatar picture"
+    />
+    <IconUser v-else class="text-white" :class="props.iconClass" />
   </button>
 </template>

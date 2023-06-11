@@ -56,7 +56,9 @@ defineExpose({ openModal });
             :key="user.id"
           >
             <div class="flex items-center">
-              <template v-if="user.profilePicture"></template>
+              <template v-if="user.profilePicture">
+                <Avatar :img="user.profilePicture" buttonClass="w-10 h-10" />
+              </template>
               <template v-else>
                 <Avatar buttonClass="w-10 h-10" />
               </template>

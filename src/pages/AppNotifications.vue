@@ -57,9 +57,9 @@ onMounted(async () => {
               @click.stop="showNotificationDetails(index)"
             >
               <div class="flex w-full h-full">
-                <template
-                  v-if="(notification as IFriendRequestNotification).icon"
-                ></template>
+                <template v-if="notification.icon">
+                  <Avatar :img="notification.icon" />
+                </template>
                 <template v-else>
                   <Avatar />
                 </template>
