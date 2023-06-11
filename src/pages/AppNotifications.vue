@@ -1,16 +1,48 @@
 <script lang="ts" setup>
+import Avatar from "@/components/Avatar.vue";
 import { useRequests, setReadedRequests } from "@/services/users-service";
-import { IconBell, IconAlertTriangle } from "@tabler/icons-vue";
-import { IconUser } from "@tabler/icons-vue";
+import { IconAlertTriangle } from "@tabler/icons-vue";
 import { onMounted, ref, watchEffect } from "vue";
 import { useCurrentUser } from "vuefire";
+import useLoggerService from "@/services/logger-service";
+import {
+  acceptUserRequest,
+  declineUserRequest,
+} from "@/services/friends-service";
 
+const { print } = useLoggerService();
 const currentUser = useCurrentUser();
 const requests = ref<IRequest[]>([]);
+const clickedRequests = ref<{ clicked: boolean }[]>(
+  requests.value.map(() => ({
+    clicked: false,
+  }))
+);
+
+const showNotificationDetails = (elementIndex: number) => {
+  clickedRequests.value[elementIndex].clicked =
+    !clickedRequests.value[elementIndex].clicked;
+};
 
 watchEffect(() => {
   requests.value = useRequests(false) as IRequest[];
 });
+
+watchEffect(() => {
+  clickedRequests.value = requests.value.map(() => ({
+    clicked: false,
+  }));
+});
+
+const acceptRequest = async (requestID: string, requestFromAuthID: string) => {
+  acceptUserRequest(requestID, requestFromAuthID);
+  print("log", ["Accepted request:", requestID]);
+};
+const declineRequest = async (requestID: string) => {
+  declineUserRequest(requestID);
+
+  print("log", ["Declined request:", requestID]);
+};
 
 onMounted(async () => {
   if (currentUser.value) {
@@ -21,49 +53,49 @@ onMounted(async () => {
 
 <template>
   <div class="relative w-full h-[90%] overflow-hidden rounded-b-[70px] p-3">
-    <div class="h-[100%] rounded-b-[70px]">
-      <div class="w-full flex items-center mt-4">
-        <IconBell />
-        <h2 class="text-md font-medium ml-2">Wszystkie powiadomienia</h2>
-      </div>
+    <div class="h-full rounded-b-[70px]">
       <template v-if="requests.length > 0">
-        <ul class="flex flex-col w-full h-full">
-          <div class="overflow-scroll w-full h-full pb-5 mt-2">
+        <ul class="flex flex-col-reverse w-full h-full">
+          <div class="overflow-scroll w-full h-full pb- mt-2">
             <li
-              class="flex w-full h-18 p-4 items-center mb-2 rounded-full bg-[#12121207]"
-              v-for="request in requests"
+              class="flex w-full p-2 items-center mb-1 rounded-full bg-[#12121207]"
+              v-for="(request, index) in requests"
               :key="request.id"
+              @click.stop="showNotificationDetails(index)"
             >
               <div class="flex w-full h-full">
                 <template v-if="request.fromProfilePicture"></template>
                 <template v-else>
-                  <div
-                    class="rounded-full flex items-center justify-center border-2 border-[#121212] w-12 h-12"
-                  >
-                    <IconUser class="text-[#121212] scale-[110%]" />
-                  </div>
+                  <Avatar />
                 </template>
                 <div
-                  class="ml-2 flex w-[calc(100%-3rem)] flex-col font-medium text-[#12121299] text-xl"
+                  class="ml-2 flex w-[calc(100%-3rem)] flex-col justify-center font-medium text-[#12121299] text-xl"
                 >
                   <span class="m-0 text-[1rem] text-[#121212]">
                     {{ ` ${request.message}` }}
                   </span>
-                  <div
-                    v-if="request.type === 'FRIEND_REQUEST'"
-                    class="flex justify-end m-0 p-0 text-sm"
-                  >
-                    <button
-                      class="bg-[red] p-1 rounded-xl pl-3 pr-3 text-white mr-2"
+                  <Transition name="collapse">
+                    <div
+                      v-if="
+                        request.type === 'FRIEND_REQUEST' &&
+                        clickedRequests[index].clicked
+                      "
+                      class="flex justify-center m-0 p-0 text-sm"
                     >
-                      Decline
-                    </button>
-                    <button
-                      class="bg-[#121212] p-1 rounded-xl pl-3 pr-3 text-white mr-2"
-                    >
-                      Accept
-                    </button>
-                  </div>
+                      <button
+                        class="bg-[red] p-1 rounded-xl pl-3 pr-3 text-white mr-2"
+                        @click="declineRequest(request.id)"
+                      >
+                        Decline
+                      </button>
+                      <button
+                        class="bg-[#121212] p-1 rounded-xl pl-3 pr-3 text-white mr-2"
+                        @click="acceptRequest(request.id, request.fromAuthID)"
+                      >
+                        Accept
+                      </button>
+                    </div>
+                  </Transition>
                 </div>
               </div>
             </li>
@@ -90,3 +122,16 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.collapse-enter-active,
+.collapse-leave-active,
+.animated {
+  transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
+}
+
+.collapse-enter-from,
+.collapse-leave-to {
+  opacity: 0;
+}
+</style>

@@ -29,10 +29,10 @@ const props = withDefaults(
         @click.self="isBackgroundClosable && $emit('closeModal')"
       >
         <div
-          class="animated relative z-[999] rounded-2xl bg-[#FAFFFC] text-[#121212] w-full max-h-[60%] p-5 pt-3 pb-3"
+          class="animated relative z-[999] rounded-2xl bg-[#FAFFFC] text-[#121212] w-full min-h-[30%] max-h-[60%] p-5 pt-3 pb-3"
         >
           <header
-            class="flex h-[10%] w-full justify-between items-center mb-2 mt-2"
+            class="flex h-12 w-full justify-between items-center mb-2 mt-2"
           >
             <h1 class="flex items-center w-[80%] font-bold text-2xl">
               <slot name="title" />
@@ -48,15 +48,15 @@ const props = withDefaults(
           <main
             class="overflow-hidden"
             :class="{
-              'h-[calc(75%-1rem)]': showFooter,
-              'h-[calc(85%-1rem)]': !showFooter,
+              'h-[calc(100%-8rem)]': showFooter,
+              'h-[calc(70%)]': !showFooter,
             }"
           >
             <slot name="content" />
           </main>
           <footer
             v-if="showFooter"
-            class="flex items-center justify-end h-[15%]"
+            class="flex items-center justify-between h-12 mt-3"
           >
             <slot name="footer" />
           </footer>

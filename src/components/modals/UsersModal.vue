@@ -3,11 +3,10 @@ import { createFriendRequest } from "@/services/friends-service";
 import Modal from "@components/modals/Modal.vue";
 import SearchInput from "@components/SearchInput.vue";
 import useUsers from "@services/users-service";
-import { IconUsers } from "@tabler/icons-vue";
-import { IconArrowLeft } from "@tabler/icons-vue";
-import { IconUser, IconPlus } from "@tabler/icons-vue";
+import { IconUsers, IconArrowLeft, IconPlus } from "@tabler/icons-vue";
 import { computed, ref, watchEffect } from "vue";
 import { useCurrentUser } from "vuefire";
+import Avatar from "../Avatar.vue";
 
 const isVisible = ref<boolean>(false);
 const currentUser = useCurrentUser();
@@ -55,7 +54,7 @@ defineExpose({ openModal });
       Dodaj znajomego
     </template>
     <template #content>
-      <ul class="h-full" v-if="users.length > 0">
+      <ul class="h-full" v-if="sortedUsers.length > 0">
         <div class="overflow-scroll h-full pb-3 mt-3">
           <li
             class="flex mb-2 p-2 items-center justify-between rounded-full bg-[#12121207]"
@@ -65,11 +64,7 @@ defineExpose({ openModal });
             <div class="flex items-center">
               <template v-if="user.photoURL"></template>
               <template v-else>
-                <div
-                  class="rounded-full flex items-center justify-center border-2 border-[#121212] w-10 h-10"
-                >
-                  <IconUser class="text-[#121212] scale-[110%]" />
-                </div>
+                <Avatar buttonClass="w-10 h-10" />
               </template>
               <p
                 class="ml-2 flex flex-col font-medium text-[#12121299] text-xl"
@@ -91,7 +86,7 @@ defineExpose({ openModal });
           </li>
         </div>
       </ul>
-      <div class="w-full h-3/4 flex items-center justify-center" v-else>
+      <div class="w-full p-4 h-full flex items-center justify-center" v-else>
         <span
           class="animate-spin border-r-transparent border-l-[#121212] border-b-[#121212] border-t-[#121212] border-2 absolute w-6 h-6 rounded-full"
         ></span>
@@ -99,10 +94,10 @@ defineExpose({ openModal });
     </template>
 
     <template #footer>
-      <div class="w-full flex items-center">
-        <SearchInput class="w-4/5" />
+      <div class="w-full h-full flex items-center">
+        <SearchInput class="w-[calc(100%-4rem)]" />
         <button
-          class="rounded-full ml-2 w-12 h-12 flex items-center justify-center hover:bg-[#12121207] focus:bg-[#12121207]"
+          class="rounded-full ml-2 w-12 h-12 flex items-center justify-center bg-[#12121207]"
         >
           <IconArrowLeft />
         </button>

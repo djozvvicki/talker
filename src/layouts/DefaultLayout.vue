@@ -1,17 +1,18 @@
 <script lang="ts" setup>
+import Avatar from "@/components/Avatar.vue";
 import { APP_ROUTE_NAMES, NAVIGATION_EMITS } from "@/constants";
 import useNotificationService from "@/services/notifications-service";
 import { useRequests } from "@/services/users-service";
 import useWorkerCommunicationService from "@/services/worker-communication-service";
-// import { getCapitalTitle } from "@/utils";
+import { getCapitalTitle } from "@/utils";
 import {
   IconPhone,
   IconMessage,
   IconUsers,
   IconSettings,
-  IconUser,
   IconBell,
   IconAffiliate,
+  IconBellFilled,
 } from "@tabler/icons-vue";
 import { Ref, onMounted, ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
@@ -65,23 +66,20 @@ onMounted(() => {
         class="w-full h-[10%] flex items-center justify-between pr-4 pl-4"
       >
         <div class="flex items-center">
-          <button
-            class="rounded-full flex items-center justify-center border-2 border-[#121212] w-12 h-12"
-            @click="handleSignOut"
-          >
-            <IconUser class="text-[#121212] scale-[110%]" />
-          </button>
+          <Avatar @handleClick="handleSignOut" />
           <h1 class="font-extrabold text-3xl ml-2">
-            <!-- {{ getCapitalTitle(actualView) }}  -->
-            {{ actualView }}
+            {{ getCapitalTitle(actualView) }}
           </h1>
         </div>
         <button
-          v-if="$route.name !== APP_ROUTE_NAMES.NOTIFICATIONS"
           class="relative w-10 h-10 close-button flex items-center justify-center"
           @click="handleGoToNofitications"
         >
-          <IconBell class="text-[#121212] scale-[200%] rounded-full p-1" />
+          <IconBell
+            v-if="$route.name !== APP_ROUTE_NAMES.NOTIFICATIONS"
+            class="text-[#121212] scale-[200%] rounded-full p-1"
+          />
+          <IconBellFilled v-else />
           <span
             v-if="requests.some(({ isReaded }) => isReaded === 'no')"
             class="w-2 h-2 absolute top-1 right-1 bg-[#ff0000] rounded-full"
@@ -152,7 +150,7 @@ onMounted(() => {
 
 <style lang="scss">
 .active {
-  color: #05b661;
-  background-color: rgba(#363636, 60%);
+  color: #0dc96e;
+  background-color: rgba(#363636, 15%);
 }
 </style>
