@@ -36,7 +36,7 @@ const useNotificationService = () => {
     onMessage(messaging, async (payload) => {
       const reg = await navigator.serviceWorker.getRegistration();
 
-      if (payload.data && reg && payload.data.isNotified === "no") {
+      if (payload.data && reg) {
         console.log(payload.data);
 
         reg.showNotification(`${payload.data.message}`, {
