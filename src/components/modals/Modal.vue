@@ -79,7 +79,7 @@ const props = withDefaults(
 .fade-in-enter-active,
 .fade-in-leave-active,
 .animated {
-  transition: opacity 0.15s ease-in-out, trasnfrom 0.15s ease-in-out;
+  transition: opacity 0.15s ease-in-out, transfrom 0.15s ease-in-out;
 }
 
 .fade-in-enter-from,
