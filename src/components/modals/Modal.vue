@@ -79,7 +79,7 @@ const props = withDefaults(
 .fade-in-enter-active,
 .fade-in-leave-active,
 .animated {
-  transition: all 0.3s ease-in-out;
+  transition: opacity 0.15s ease-in-out, trasnfrom 0.15s ease-in-out;
 }
 
 .fade-in-enter-from,
@@ -88,7 +88,7 @@ const props = withDefaults(
   opacity: 0;
 
   .animated {
-    transform: translateY(60%);
+    transform: translateY(20%);
   }
 }
 </style>
