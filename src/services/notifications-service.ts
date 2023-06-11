@@ -1,3 +1,4 @@
+import useLoggerService from "@services/logger-service";
 import { useCurrentUser } from "vuefire";
 import { db, messaging } from "@services/firebase";
 import { doc, updateDoc } from "firebase/firestore";
@@ -5,6 +6,7 @@ import { onMessage } from "firebase/messaging";
 
 const useNotificationService = () => {
   const currentUser = useCurrentUser();
+  const { print } = useLoggerService();
 
   const requestPermission = async () => {
     if (Notification.permission !== "granted") {
@@ -31,7 +33,7 @@ const useNotificationService = () => {
   };
 
   const initNotificationListener = () => {
-    console.log("Init notification listener");
+    print("log", ["Init notification listener"]);
 
     onMessage(messaging, async (payload) => {
       const reg = await navigator.serviceWorker.getRegistration();
@@ -45,7 +47,7 @@ const useNotificationService = () => {
           image:
             payload.data.fromProfilePicture.length > 0
               ? payload.data.fromProfilePicture
-              : "/talker.svg",
+              : "",
           actions: [
             {
               action: "decline",

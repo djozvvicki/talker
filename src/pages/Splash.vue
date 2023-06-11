@@ -6,17 +6,17 @@ import { useRoute, useRouter } from "vue-router";
 import Loader from "@components/Loader.vue";
 import useNotificationService from "@/services/notifications-service";
 
-const { query } = useRoute();
+const route = useRoute();
 const router = useRouter();
+
 const splashScreenTimeout: Ref<NodeJS.Timeout | null> = ref(null);
 const { requestPermission } = useNotificationService();
 
 const hideSplashScreen = () => {
-  console.log("hide splash screen");
-
   router.replace({
-    name: APP_ROUTE_NAMES.INDEX,
-    query,
+    name: route.query.nextPage
+      ? (route.query.nextPage as APP_ROUTE_NAMES)
+      : APP_ROUTE_NAMES.CHATS,
   });
   if (splashScreenTimeout.value) {
     clearTimeout(splashScreenTimeout.value);
@@ -26,6 +26,18 @@ const hideSplashScreen = () => {
 
 onMounted(async () => {
   await requestPermission();
+
+  const nextPage =
+    route.fullPath !== "/"
+      ? route.fullPath.slice(1).replace("/", ".")
+      : APP_ROUTE_NAMES.CHATS;
+
+  router.replace({
+    name: APP_ROUTE_NAMES.SPLASH,
+    query: {
+      nextPage,
+    },
+  });
 
   splashScreenTimeout.value = setTimeout(hideSplashScreen, SPLASH_SCREEN_TIME);
 });

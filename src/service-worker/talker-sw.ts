@@ -8,6 +8,9 @@ import { initializeApp } from "firebase/app";
 import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw";
 import config from "@services/firebase/config";
 import { getToken } from "firebase/messaging";
+import useLoggerService from "@services/logger-service";
+
+const { print } = useLoggerService();
 
 precacheAndRoute(self.__WB_MANIFEST || []);
 
@@ -64,6 +67,8 @@ const app = initializeApp(config);
 const messaging = getMessaging(app);
 
 onBackgroundMessage(messaging, async (payload) => {
+  print("log", ["Background message received!"]);
+
   if (payload.data) {
     self.registration.showNotification(`${payload.data.message}`, {
       tag: payload.data.type,
@@ -71,7 +76,7 @@ onBackgroundMessage(messaging, async (payload) => {
       image:
         payload.data.fromProfilePicture.length > 0
           ? payload.data.fromProfilePicture
-          : "/talker.svg",
+          : "",
       actions: [
         {
           action: "decline",
@@ -89,53 +94,11 @@ onBackgroundMessage(messaging, async (payload) => {
       requestID: payload.data.requestID,
     });
 
-    console.log(payload);
+    print("groupCollapsed", ["BG message payload"]);
+    print("log", [payload.data]);
+    print("groupEnd", []);
   }
 });
-
-// Logger
-let inGroup = false;
-const methodToColorMap = {
-  debug: `#7f8c8d`,
-  log: `#2ecc71`,
-  warn: `#f39c12`,
-  error: `#c0392b`,
-  groupCollapsed: `#3498db`,
-  groupEnd: null, // No colored prefix on groupEnd
-};
-
-type ConsoleMethod =
-  | "log"
-  | "groupCollapsed"
-  | "warn"
-  | "error"
-  | "debug"
-  | "groupEnd";
-
-const print = function (method: ConsoleMethod, args: any) {
-  if (method === "groupCollapsed") {
-    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-      console[method](...args);
-      return;
-    }
-  }
-  const styles = [
-    `background: ${methodToColorMap[method]}`,
-    `border-radius: 0.5em`,
-    `color: white`,
-    `font-weight: bold`,
-    `padding: 2px 0.5em`,
-  ];
-  // When in a group, the workbox prefix is not displayed.
-  const logPrefix = inGroup ? [] : ["%cTalker SW", styles.join(";")];
-  console[method](...logPrefix, ...args);
-  if (method === "groupCollapsed") {
-    inGroup = true;
-  }
-  if (method === "groupEnd") {
-    inGroup = false;
-  }
-};
 
 self.addEventListener("notificationclick", (event) => {
   const { notification } = event;
@@ -151,8 +114,9 @@ self.addEventListener("notificationclick", (event) => {
         type: "window",
       })
       .then(function (clientList) {
-        console.log(clientList);
-
+        print("groupCollapsed", ["Actual clients"]);
+        print("log", [clientList]);
+        print("groupEnd", []);
         for (let i = 0; i < clientList.length; i++) {
           let client = clientList[i];
           if (client.url.includes("/app") && "focus" in client) {
@@ -184,7 +148,7 @@ const regenerateToken = async () => {
   });
 
   print("groupCollapsed", ["Token succesfully regenerated!"]);
-  print("log", [`Generated token -> ${token}`]);
+  print("log", [token]);
   print("groupEnd", []);
 };
 
@@ -205,8 +169,8 @@ self.addEventListener("message", (event) => {
   const eventData = event.data;
 
   if (eventData) {
-    print("groupCollapsed", ["Message send!"]);
-    print("log", [`Action -> ${eventData.type ?? "empty"}`, eventData]);
+    print("groupCollapsed", ["Message received!"]);
+    print("log", [eventData]);
     print("groupEnd", []);
   }
 });

@@ -1,4 +1,5 @@
 import {
+  arrayUnion,
   collection,
   doc,
   getDocs,
@@ -83,14 +84,14 @@ export const setReadedRequests = async (userAuthID: string) => {
   );
 };
 
-export const sendUserToken = async (token: string) => {
+export const sendClientToken = async (token: string) => {
   const currentUser = useCurrentUser();
 
   if (currentUser.value) {
     const docRef = doc(db, "users", currentUser.value.uid);
 
     await updateDoc(docRef, {
-      notificationToken: token,
+      clientTokens: arrayUnion(token),
     });
   }
 };

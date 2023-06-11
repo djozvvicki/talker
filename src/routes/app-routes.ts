@@ -4,13 +4,13 @@ export const appRoutes = [
   {
     name: APP_ROUTE_NAMES.SPLASH,
     path: "/",
-    component: () => import("@components/SplashScreen.vue"),
+    component: () => import("@pages/Splash.vue"),
   },
   {
     name: APP_ROUTE_NAMES.INDEX,
     path: "/app",
 
-    component: () => import("@pages/Home.vue"),
+    component: () => import("@pages/AppIndex.vue"),
     meta: {
       requiresAuth: true,
     },

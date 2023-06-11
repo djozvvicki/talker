@@ -30,7 +30,7 @@ const emits = defineEmits<{
   ): void | Promise<void>;
 }>();
 
-const props = defineProps<{
+defineProps<{
   actualView: APP_ROUTE_NAMES;
 }>();
 
@@ -50,8 +50,6 @@ const handleSignOut = async () => {
 };
 
 onMounted(() => {
-  router.push({ name: props.actualView });
-
   initNotificationListener();
 
   bc.postMessage({
