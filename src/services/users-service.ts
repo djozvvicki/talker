@@ -5,11 +5,14 @@ import {
   getDocs,
   onSnapshot,
   query,
+  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { ref } from "vue";
 import { useCurrentUser } from "vuefire";
 import { db } from "@services/firebase";
+import { type User } from "firebase/auth";
+import useLoggerService from "@services/logger-service";
 
 const useUsers = () => {
   const usersList = ref<IUser[]>([]);
@@ -94,6 +97,20 @@ export const sendClientToken = async (token: string) => {
       clientTokens: arrayUnion(token),
     });
   }
+};
+
+export const createUserDocument = async (createdUser: User) => {
+  const { print } = useLoggerService();
+
+  const user = await setDoc(doc(db, "users", createdUser.uid), {
+    authID: createdUser.uid,
+    name: createdUser.email?.slice(0, createdUser.email.indexOf("@")),
+    nick: `@${createdUser.email?.slice(0, createdUser.email.indexOf("@"))}`,
+  });
+
+  print("groupCollapsed", ["User document created!"]);
+  print("log", [user]);
+  print("groupEnd", []);
 };
 
 export default useUsers;

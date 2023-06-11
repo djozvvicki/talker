@@ -29,7 +29,11 @@ const handleLogin = async () => {
     isLoggingIn.value = false;
 
     if (status === API_STATUSES.SUCCESS) {
-      router.push({ path: (route.query.redirect as string) ?? "/app" });
+      router.push({
+        path:
+          (route.query.redirect as string) ??
+          APP_ROUTE_NAMES.CHATS.replace(".", "/"),
+      });
     } else {
       error.value = data;
     }
