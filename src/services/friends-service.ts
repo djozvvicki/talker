@@ -5,12 +5,35 @@ import {
   collection,
   doc,
   getDoc,
+  onSnapshot,
   updateDoc,
 } from "firebase/firestore";
 import useLoggerService from "@services/logger-service";
+import { ref } from "vue";
 
 const { print } = useLoggerService();
 const db = useFirestore();
+
+export const useUser = () => {
+  const user = ref<IUser | null>(null);
+  const currentUser = useCurrentUser();
+
+  if (currentUser.value) {
+    const userRef = doc(db, "users", currentUser.value.uid);
+    onSnapshot(userRef, { includeMetadataChanges: true }, (snapshot) => {
+      const userData = snapshot.data() as IUser;
+
+      if (
+        !user.value ||
+        user.value.friends.length !== userData.friends.length
+      ) {
+        user.value = userData;
+      }
+    });
+  }
+
+  return user.value;
+};
 
 export const createFriendRequest = async (from: IUser, to: IUser) => {
   const requestData = {

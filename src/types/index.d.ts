@@ -22,6 +22,7 @@ interface IUser {
   photoURL: string;
   nick: string;
   name: string;
+  friends: IUser[];
   requests: IRequest[];
 }
 

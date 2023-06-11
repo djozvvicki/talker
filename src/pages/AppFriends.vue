@@ -1,11 +1,26 @@
 <script lang="ts" setup>
+import Avatar from "@/components/Avatar.vue";
 import SearchInput from "@/components/SearchInput.vue";
 import UsersModal from "@/components/modals/UsersModal.vue";
+import useUsers from "@/services/users-service";
 import { IconPlus, IconUsers, IconAlertTriangle } from "@tabler/icons-vue";
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
+import { useCurrentUser } from "vuefire";
 
-const friends = ref([]);
+const currentUser = useCurrentUser();
+const friends = ref<IUser[]>([]);
+const users = ref<IUser[]>([]);
 const usersModalRef = ref();
+
+watchEffect(() => {
+  users.value = useUsers();
+});
+
+watchEffect(() => {
+  friends.value =
+    users.value.find((user) => user.authID === currentUser.value?.uid)
+      ?.friends ?? [];
+});
 
 const openUsersModal = () => {
   if (usersModalRef.value) {
@@ -23,9 +38,38 @@ const openUsersModal = () => {
           <IconUsers />
           <h2 class="text-md font-medium ml-2">Wszyscy znajomi</h2>
         </div>
-        <span v-if="friends.length > 0" class="font-bold">0</span>
+        <span v-if="friends && friends.length > 0" class="font-bold">{{
+          friends.length
+        }}</span>
       </div>
-      <template v-if="friends.length > 0"> Znajomi </template>
+      <template v-if="friends && friends.length > 0">
+        <ul class="h-full">
+          <div class="overflow-scroll h-full pb-3 mt-3">
+            <li
+              class="flex mb-2 p-2 items-center justify-between rounded-full bg-[#12121207]"
+              v-for="friend in friends"
+              :key="friend.id"
+            >
+              <div class="flex items-center">
+                <template v-if="friend.photoURL"></template>
+                <template v-else>
+                  <Avatar buttonClass="w-10 h-10" />
+                </template>
+                <p
+                  class="ml-2 flex flex-col font-medium text-[#12121299] text-xl"
+                >
+                  <span class="m-0 text-[#121212]">
+                    {{ friend.name }}
+                  </span>
+                  <span class="m-0 p-0 text-sm">
+                    {{ friend.nick }}
+                  </span>
+                </p>
+              </div>
+            </li>
+          </div>
+        </ul>
+      </template>
       <template v-else>
         <div class="w-full h-full flex flex-col items-center justify-center">
           <div
