@@ -5540,9 +5540,8 @@ self.addEventListener("activate", async () => {
 });
 const ne = new BroadcastChannel("talker-sw"), da = Kt(vi), Cn = Ii(da);
 Ei(Cn, async (e) => {
-  e.data && e.data.isNotified === "no" && (self.registration.showNotification(e.data.type, {
-    tag: "FRIEND_REQUEST",
-    body: `${e.data.name} ${e.data.message}`,
+  e.data && (self.registration.showNotification(`${e.data.message}`, {
+    tag: e.data.type,
     actions: [
       {
         action: "decline",

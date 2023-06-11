@@ -39,7 +39,7 @@ const useNotificationService = () => {
       if (payload.data && reg && payload.data.isNotified === "no") {
         console.log(payload.data);
 
-        reg.showNotification(`${payload.data.name} ${payload.data.message}`, {
+        reg.showNotification(`${payload.data.message}`, {
           tag: payload.data.type,
           actions: [
             {

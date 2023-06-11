@@ -64,10 +64,9 @@ const app = initializeApp(config);
 const messaging = getMessaging(app);
 
 onBackgroundMessage(messaging, async (payload) => {
-  if (payload.data && payload.data.isNotified === "no") {
-    self.registration.showNotification(payload.data.type, {
-      tag: "FRIEND_REQUEST",
-      body: `${payload.data.name} ${payload.data.message}`,
+  if (payload.data) {
+    self.registration.showNotification(`${payload.data.message}`, {
+      tag: payload.data.type,
       actions: [
         {
           action: "decline",
