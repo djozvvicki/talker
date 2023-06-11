@@ -41,6 +41,11 @@ const useNotificationService = () => {
 
         reg.showNotification(`${payload.data.message}`, {
           tag: payload.data.type,
+          icon: "/talker.svg",
+          image:
+            payload.data.fromProfilePicture.length > 0
+              ? payload.data.fromProfilePicture
+              : "/talker.svg",
           actions: [
             {
               action: "decline",

@@ -5542,6 +5542,8 @@ const ne = new BroadcastChannel("talker-sw"), da = Kt(vi), Cn = Ii(da);
 Ei(Cn, async (e) => {
   e.data && (self.registration.showNotification(`${e.data.message}`, {
     tag: e.data.type,
+    icon: "/talker.svg",
+    image: e.data.fromProfilePicture.length > 0 ? e.data.fromProfilePicture : "/talker.svg",
     actions: [
       {
         action: "decline",

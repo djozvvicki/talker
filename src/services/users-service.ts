@@ -9,13 +9,12 @@ import {
 import { ref } from "vue";
 import { useCurrentUser } from "vuefire";
 import { db } from "@services/firebase";
-// import useNotificationService from "./notifications-service";
 
 const useUsers = () => {
   const usersList = ref<IUser[]>([]);
   const q = query(collection(db, "users"));
 
-  onSnapshot(q, (snapshot) => {
+  onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
     snapshot.docChanges().forEach((change) => {
       const { newIndex, oldIndex, doc, type } = change;
       const user = doc.data() as IUser;
@@ -41,7 +40,7 @@ export const useRequests = (returnAsRef: boolean = true) => {
   if (currentUser.value) {
     const q = query(collection(db, "users", currentUser.value.uid, "requests"));
 
-    onSnapshot(q, (snapshot) => {
+    onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         const { newIndex, oldIndex, doc, type } = change;
         const request = {
