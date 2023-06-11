@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { APP_ROUTE_NAMES } from "@/constants";
 import DefaultLayout from "@layouts/DefaultLayout.vue";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const { query } = useRoute();
@@ -14,10 +14,6 @@ const changeActualView = (newView: APP_ROUTE_NAMES) => {
   actualView.value = newView;
   router.push({ name: newView });
 };
-
-onMounted(() => {
-  router.push({ name: actualView.value });
-});
 </script>
 <template>
   <DefaultLayout :actualView="actualView" @changeActualView="changeActualView">

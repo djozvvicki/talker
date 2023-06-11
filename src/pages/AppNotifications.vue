@@ -35,7 +35,7 @@ onMounted(async () => {
               :key="request.id"
             >
               <div class="flex w-full h-full">
-                <template v-if="request.from.photoURL"></template>
+                <template v-if="request.fromProfilePicture"></template>
                 <template v-else>
                   <div
                     class="rounded-full flex items-center justify-center border-2 border-[#121212] w-12 h-12"
@@ -47,7 +47,6 @@ onMounted(async () => {
                   class="ml-2 flex w-[calc(100%-3rem)] flex-col font-medium text-[#12121299] text-xl"
                 >
                   <span class="m-0 text-[1rem] text-[#121212]">
-                    <b>{{ request.from.nick }}</b>
                     {{ ` ${request.message}` }}
                   </span>
                   <div

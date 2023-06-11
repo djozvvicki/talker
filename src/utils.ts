@@ -5,7 +5,6 @@ import {
   APP_ROUTE_TITLES,
   FIREBASE_AUTH_ERRORS,
 } from "./constants";
-import useWorkerCommunicationService from "./services/worker-communication-service";
 export const getCapitalTitle = (appRouteName: APP_ROUTE_NAMES) => {
   const routeLabel = APP_ROUTE_TITLES[appRouteName];
 
@@ -66,16 +65,10 @@ export const getFieldFromErrorCode = (errCode: string) => {
 };
 
 export function initSW() {
-  const { bc } = useWorkerCommunicationService();
-
   window.addEventListener("load", async () => {
     if ("serviceWorker" in navigator) {
       await navigator.serviceWorker.register("/talker-sw.js", {
         type: "classic",
-      });
-
-      bc.postMessage({
-        type: "INIT_COMMUNICATION",
       });
     }
   });

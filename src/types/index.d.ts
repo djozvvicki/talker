@@ -8,10 +8,11 @@ type IRequestType = "FRIEND_REQUEST";
 
 interface IRequest {
   id: string;
-  isReaded?: boolean;
-  isNotified?: boolean;
+  isReaded: string;
+  isNotified: string;
   type: IRequestType;
-  from: IUser;
+  fromAuthID: string;
+  fromProfilePicture: string;
   message: string;
 }
 

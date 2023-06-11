@@ -30,14 +30,14 @@ export default defineConfig({
         type: "module",
         enabled: true,
       },
-      workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+      injectManifest: {
+        maximumFileSizeToCacheInBytes: 10000000,
+        globPatterns: ["**/**/*.{js,css,html,ico,png,svg}"],
         globIgnores: [
           "**/node_modules/**/*",
           "talker-sw.js",
           "**/f-emulators/**/*",
         ],
-        sourcemap: true,
       },
       scope: "/",
       srcDir: "src/service-worker",

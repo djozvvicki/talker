@@ -2,7 +2,8 @@
 declare const self: ServiceWorkerGlobalScope;
 
 import { createHandlerBoundToURL, precacheAndRoute } from "workbox-precaching";
-import { registerRoute } from "workbox-routing";
+import { registerRoute, Route } from "workbox-routing";
+import { CacheFirst, StaleWhileRevalidate } from "workbox-strategies";
 import { initializeApp } from "firebase/app";
 import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw";
 import config from "@services/firebase/config";
@@ -15,15 +16,55 @@ registerRoute(
   createHandlerBoundToURL("/index.html")
 );
 
-self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", () => self.clients.claim());
+// Handle images:
+const imageRoute = new Route(
+  ({ request }) => {
+    return request.destination === "image";
+  },
+  new StaleWhileRevalidate({
+    cacheName: "images",
+  })
+);
+
+// Handle scripts:
+const scriptsRoute = new Route(
+  ({ request }) => {
+    return request.destination === "script";
+  },
+  new CacheFirst({
+    cacheName: "scripts",
+  })
+);
+
+// Handle styles:
+const stylesRoute = new Route(
+  ({ request }) => {
+    return request.destination === "style";
+  },
+  new CacheFirst({
+    cacheName: "styles",
+  })
+);
+
+// Register routes
+registerRoute(imageRoute);
+registerRoute(scriptsRoute);
+registerRoute(stylesRoute);
+
+self.addEventListener("install", () => {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", async () => {
+  await regenerateToken();
+});
 
 const bc = new BroadcastChannel("talker-sw");
 const app = initializeApp(config);
 const messaging = getMessaging(app);
 
 onBackgroundMessage(messaging, async (payload) => {
-  if (payload.data) {
+  if (payload.data && payload.data.isNotified === "no") {
     self.registration.showNotification(payload.data.type, {
       tag: "FRIEND_REQUEST",
       body: `${payload.data.name} ${payload.data.message}`,
@@ -37,6 +78,11 @@ onBackgroundMessage(messaging, async (payload) => {
           title: "Accept",
         },
       ],
+    });
+
+    bc.postMessage({
+      type: "SET_NOTIFIED_NOTIFICATION",
+      requestID: payload.data.requestID,
     });
 
     console.log(payload);
@@ -87,23 +133,6 @@ const print = function (method: ConsoleMethod, args: any) {
   }
 };
 
-// Talker SW
-self.addEventListener("activate", async () => {
-  print("log", ["Running..."]);
-
-  const token = await getToken(messaging, {
-    serviceWorkerRegistration: self.registration,
-    vapidKey:
-      "BOF-yJZi4d8yVCVRkD6lvrviRbMObr7fHl5ma2IyJzjDC4-Ecr9_FGJsDTloNVuETMQUqH7MVEoXfV3MkGg5yO4",
-  });
-
-  bc.postMessage({
-    type: "TOKEN_DOWNLOAD",
-    token,
-  });
-  print("log", [token]);
-});
-
 self.addEventListener("notificationclick", (event) => {
   const { notification } = event;
 
@@ -138,13 +167,33 @@ self.addEventListener("notificationclick", (event) => {
   );
 });
 
-bc.onmessage = (ev) => {
-  if (ev.data?.type === "INIT_COMMUNICATION") {
-    print("log", ["Communication initialized"]);
+const regenerateToken = async () => {
+  const token = await getToken(messaging, {
+    serviceWorkerRegistration: self.registration,
+    vapidKey:
+      "BOF-yJZi4d8yVCVRkD6lvrviRbMObr7fHl5ma2IyJzjDC4-Ecr9_FGJsDTloNVuETMQUqH7MVEoXfV3MkGg5yO4",
+  });
 
-    bc.postMessage({
-      type: "Communication initialized",
-    });
+  bc.postMessage({
+    type: "TOKEN_REGENERATED",
+    token,
+  });
+
+  print("groupCollapsed", ["Token succesfully regenerated!"]);
+  print("log", [`Generated token -> ${token}`]);
+  print("groupEnd", []);
+};
+
+const claimClients = () => {
+  self.clients.claim();
+  print("log", [`Client claimed!`]);
+};
+
+bc.onmessage = async (ev) => {
+  switch (ev.data?.type) {
+    case "CLAIM_CLIENTS":
+      claimClients();
+      break;
   }
 };
 

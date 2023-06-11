@@ -5,8 +5,8 @@ import useViewsService from "./views-service";
 
 const useWorkerCommunicationService = () => {
   const bc = new BroadcastChannel("talker-sw");
-  const { handleNotificationClick } = useNotificationsService();
   const { handleViewChange } = useViewsService();
+  const { setNotifiedNotification } = useNotificationsService();
 
   const handleTokenDownload = async (token: string) => {
     await sendUserToken(token);
@@ -15,14 +15,15 @@ const useWorkerCommunicationService = () => {
   bc.onmessage = async (ev) => {
     if (ev.data) {
       switch (ev.data.type) {
-        case "TOKEN_DOWNLOAD":
+        case "TOKEN_REGENERATED":
           handleTokenDownload(ev.data.token as string);
           break;
-        case "NOTIFICATION_CLICKED":
-          handleNotificationClick(ev.data.tag);
           break;
         case "CHANGE_VIEW":
           handleViewChange(ev.data.newPage as APP_ROUTE_NAMES.NOTIFICATIONS);
+          break;
+        case "SET_NOTIFIED_NOTIFICATION":
+          await setNotifiedNotification(ev.data.requestID as string);
           break;
         default:
           console.log(ev);

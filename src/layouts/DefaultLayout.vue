@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { APP_ROUTE_NAMES, NAVIGATION_EMITS } from "@/constants";
+import useNotificationService from "@/services/notifications-service";
 import { useRequests } from "@/services/users-service";
-import { getCapitalTitle } from "@/utils";
+import useWorkerCommunicationService from "@/services/worker-communication-service";
+// import { getCapitalTitle } from "@/utils";
 import {
   IconPhone,
   IconMessage,
@@ -11,9 +13,15 @@ import {
   IconBell,
   IconAffiliate,
 } from "@tabler/icons-vue";
-import { Ref, ref, watchEffect } from "vue";
+import { Ref, onMounted, ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { useFirebaseAuth } from "vuefire";
+
+const auth = useFirebaseAuth();
+const router = useRouter();
+const requests: Ref<IRequest[]> = ref([]);
+const { bc } = useWorkerCommunicationService();
+const { initNotificationListener } = useNotificationService();
 
 const emits = defineEmits<{
   (
@@ -22,13 +30,9 @@ const emits = defineEmits<{
   ): void | Promise<void>;
 }>();
 
-defineProps<{
+const props = defineProps<{
   actualView: APP_ROUTE_NAMES;
 }>();
-
-const auth = useFirebaseAuth();
-const router = useRouter();
-const requests: Ref<IRequest[]> = ref([]);
 
 watchEffect(() => {
   requests.value = useRequests(false) as IRequest[];
@@ -44,6 +48,16 @@ const handleSignOut = async () => {
     router.replace({ name: APP_ROUTE_NAMES.LOGIN });
   }
 };
+
+onMounted(() => {
+  router.push({ name: props.actualView });
+
+  initNotificationListener();
+
+  bc.postMessage({
+    type: "CLAIM_CLIENTS",
+  });
+});
 </script>
 
 <template>
@@ -60,7 +74,8 @@ const handleSignOut = async () => {
             <IconUser class="text-[#121212] scale-[110%]" />
           </button>
           <h1 class="font-extrabold text-3xl ml-2">
-            {{ getCapitalTitle(actualView) }}
+            <!-- {{ getCapitalTitle(actualView) }}  -->
+            {{ actualView }}
           </h1>
         </div>
         <button
@@ -70,7 +85,7 @@ const handleSignOut = async () => {
         >
           <IconBell class="text-[#121212] scale-[200%] rounded-full p-1" />
           <span
-            v-if="requests.some(({ isReaded }) => !isReaded)"
+            v-if="requests.some(({ isReaded }) => isReaded === 'no')"
             class="w-2 h-2 absolute top-1 right-1 bg-[#ff0000] rounded-full"
           ></span>
         </button>

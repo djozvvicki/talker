@@ -44,7 +44,10 @@ export const useRequests = (returnAsRef: boolean = true) => {
     onSnapshot(q, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         const { newIndex, oldIndex, doc, type } = change;
-        const request = doc.data() as IRequest;
+        const request = {
+          ...doc.data(),
+          id: doc.id,
+        } as IRequest;
 
         if (type === "added") {
           requests.value.splice(newIndex, 0, request);
@@ -71,8 +74,7 @@ export const setReadedRequests = async (userAuthID: string) => {
   requestsCollection.forEach((request) => {
     requestPromises.push(async () => {
       await updateDoc(request.ref, {
-        isReaded: true,
-        isNotified: true,
+        isReaded: "yes",
       });
     });
   });
