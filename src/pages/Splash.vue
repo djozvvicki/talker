@@ -10,7 +10,8 @@ const route = useRoute();
 const router = useRouter();
 
 const splashScreenTimeout: Ref<NodeJS.Timeout | null> = ref(null);
-const { requestPermission } = useNotificationService();
+const { requestPermission, initCloudMessageListener } =
+  useNotificationService();
 
 const hideSplashScreen = () => {
   router.replace({
@@ -26,6 +27,7 @@ const hideSplashScreen = () => {
 
 onMounted(async () => {
   await requestPermission();
+  initCloudMessageListener();
 
   const nextPage =
     route.fullPath !== "/"
