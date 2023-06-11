@@ -3,7 +3,9 @@ import { createFriendRequest } from "@/services/friends-service";
 import Modal from "@components/modals/Modal.vue";
 import SearchInput from "@components/SearchInput.vue";
 import useUsers from "@services/users-service";
-import { IconUsers, IconUser, IconPlus } from "@tabler/icons-vue";
+import { IconUsers } from "@tabler/icons-vue";
+import { IconArrowLeft } from "@tabler/icons-vue";
+import { IconUser, IconPlus } from "@tabler/icons-vue";
 import { computed, ref, watchEffect } from "vue";
 import { useCurrentUser } from "vuefire";
 
@@ -37,35 +39,34 @@ const closeModal = () => {
 };
 
 const sortedUsers = computed(() => {
-  return users.value.sort((a, b) => (a.nick > b.nick ? 1 : -1));
+  return users.value.sort((a, b) => (a.nick < b.nick ? 1 : -1));
 });
 
 defineExpose({ openModal });
 </script>
 <template>
-  <Modal :isVisible="isVisible" :showFooter="false" @closeModal="closeModal">
-    <template #title> Dodaj znajomego </template>
+  <Modal
+    :isVisible="isVisible"
+    @closeModal="closeModal"
+    :showCloseButton="false"
+  >
+    <template #title>
+      <IconUsers class="scale-[150%] mr-4" />
+      Dodaj znajomego
+    </template>
     <template #content>
-      <SearchInput />
-
       <ul class="h-full" v-if="users.length > 0">
-        <div class="flex justify-between items-center">
-          <h3 class="flex mt-2">
-            <IconUsers class="mr-2" />
-            Proponowani
-          </h3>
-        </div>
-        <div class="overflow-scroll h-full p-2 pb-5 mt-2">
+        <div class="overflow-scroll h-full pb-3 mt-3">
           <li
-            class="flex p-2 items-center mb-2 justify-between rounded-full bg-[#12121207]"
+            class="flex mb-2 p-2 items-center justify-between rounded-full bg-[#12121207]"
             v-for="user in sortedUsers"
             :key="user.id"
           >
-            <div class="flex">
+            <div class="flex items-center">
               <template v-if="user.photoURL"></template>
               <template v-else>
                 <div
-                  class="rounded-full flex items-center justify-center border-2 border-[#121212] w-12 h-12"
+                  class="rounded-full flex items-center justify-center border-2 border-[#121212] w-10 h-10"
                 >
                   <IconUser class="text-[#121212] scale-[110%]" />
                 </div>
@@ -94,6 +95,17 @@ defineExpose({ openModal });
         <span
           class="animate-spin border-r-transparent border-l-[#121212] border-b-[#121212] border-t-[#121212] border-2 absolute w-6 h-6 rounded-full"
         ></span>
+      </div>
+    </template>
+
+    <template #footer>
+      <div class="w-full flex items-center">
+        <SearchInput class="w-4/5" />
+        <button
+          class="rounded-full ml-2 w-12 h-12 flex items-center justify-center hover:bg-[#12121207] focus:bg-[#12121207]"
+        >
+          <IconArrowLeft />
+        </button>
       </div>
     </template>
   </Modal>

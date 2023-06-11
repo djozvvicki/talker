@@ -13,7 +13,6 @@ const useNotificationService = () => {
       try {
         await Notification.requestPermission();
       } catch (err) {
-        console.log("Something wrong with notifications!");
         return false;
       }
     }
@@ -33,13 +32,15 @@ const useNotificationService = () => {
   };
 
   const initNotificationListener = () => {
-    print("log", ["Init notification listener"]);
+    print("log", ["Initialize notification listener!"]);
 
     onMessage(messaging, async (payload) => {
       const reg = await navigator.serviceWorker.getRegistration();
 
       if (payload.data && reg) {
-        console.log(payload.data);
+        print("groupCollapsed", ["Message data"]);
+        print("log", [payload.data]);
+        print("groupEnd", []);
 
         reg.showNotification(`${payload.data.message}`, {
           tag: payload.data.type,

@@ -6,7 +6,9 @@ import useWorkerCommunicationService from "@services/worker-communication-servic
 const { initMessageListener } = useWorkerCommunicationService();
 
 onMounted(() => {
-  initSW();
+  if (import.meta.env.MODE !== "development") {
+    initSW();
+  }
   initMessageListener();
 });
 </script>
