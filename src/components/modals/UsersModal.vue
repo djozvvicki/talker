@@ -29,7 +29,12 @@ const sortedUsers = computed(() => {
   return usersList.value.filter((user) => {
     return (
       !friends.value.find((friend) => friend.authID === user.authID) &&
-      user.name.includes(userName.value)
+      (user.name
+        .toLocaleLowerCase()
+        .includes(userName.value.toLocaleLowerCase()) ||
+        user.nick
+          .toLocaleLowerCase()
+          .includes(userName.value.toLocaleLowerCase()))
     );
   });
 });
@@ -50,7 +55,7 @@ defineExpose({ openModal });
       Dodaj znajomego
     </template>
     <template #content>
-      <ul class="h-full" v-if="sortedUsers.length > 0">
+      <ul class="h-full" v-if="sortedUsers.length > 0 && usersList.length > 0">
         <div class="overflow-scroll h-full pb-3 mt-3">
           <li
             class="flex mb-2 p-2 items-center justify-between rounded-full bg-[#12121207]"

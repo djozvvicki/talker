@@ -58,19 +58,13 @@ onMounted(async () => {
     id="default-layout"
     class="bg-black w-full h-screen"
   >
-    <div class="w-full h-[90%] bg-[#FAFFFC] rounded-b-[70px]">
+    <div class="relative w-full h-[90%] bg-[#FAFFFC] rounded-b-[70px]">
       <header
-        class="w-full h-[10%] flex items-center justify-between pr-4 pl-4"
+        class="relative z-[50] w-full h-[10%] flex items-center justify-between pr-4 pl-4"
       >
         <div class="flex items-center">
-          <h1
-            v-if="generalStore.actualView !== APP_ROUTE_NAMES.PROFILE"
-            class="font-extrabold text-3xl ml-2"
-          >
+          <h1 class="font-extrabold text-3xl ml-2">
             {{ getCapitalTitle(generalStore.actualView) }}
-          </h1>
-          <h1 v-else class="font-extrabold text-3xl ml-2">
-            {{ generalStore.userData?.name }}
           </h1>
         </div>
         <div class="flex gap-4">
@@ -108,7 +102,7 @@ onMounted(async () => {
       </header>
       <slot name="content" />
     </div>
-    <nav class="flex h-[10%]">
+    <nav class="flex h-[10%] relative z-[50]">
       <button
         class="w-full h-full flex items-center justify-center p-2"
         @click="generalStore.setActualView(APP_ROUTE_NAMES.CHATS)"

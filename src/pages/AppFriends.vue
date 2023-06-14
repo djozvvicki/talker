@@ -39,15 +39,19 @@ onMounted(() => {
           friends.length
         }}</span>
       </div>
-      <template v-if="friends.length > 0">
+      <template v-if="friends.length">
         <ul class="flex h-[calc(90%-1rem)]">
           <div class="overflow-scroll h-full w-full pb-5 mt-2">
             <template v-for="friend in friends" :key="friend.id">
               <li
                 class="flex w-full mb-1 p-2 items-center justify-between rounded-full bg-[#12121207]"
                 v-if="
-                  friend.name.includes(friendName) ||
-                  friend.nick.includes(friendName)
+                  friend.name
+                    .toLocaleLowerCase()
+                    .includes(friendName.toLocaleLowerCase()) ||
+                  friend.nick
+                    .toLocaleLowerCase()
+                    .includes(friendName.toLocaleLowerCase())
                 "
               >
                 <div class="flex items-center">

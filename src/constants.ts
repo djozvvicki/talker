@@ -32,7 +32,7 @@ export const APP_ROUTE_TITLES = {
   "app.register": "Rejestracja",
   "app.login": "Logowanie",
   "app.splash": "Splash",
-  "app.profile": "Profil",
+  "app.profile": "Twój profil",
   "app.video-call": "Połączenie video",
   "app.call": "Połączenie głosowe",
   "app.forgotten_password": "Resetuj hasło",
