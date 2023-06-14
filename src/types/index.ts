@@ -1,6 +1,7 @@
 import type {
   CollectionReference,
   DocumentReference,
+  Timestamp,
 } from "firebase/firestore";
 
 export interface IGeneralError {
@@ -21,7 +22,14 @@ export interface ICreateAccountError extends IGeneralError {
 }
 
 export type ICallTypes = "VIDEO" | "VOICE";
-export type IMessageTypes = "VIDEO" | "TEXT" | "IMAGE" | "FILE" | "VOICE";
+export type IMessageTypes =
+  | "VIDEO"
+  | "TEXT"
+  | "IMAGE"
+  | "FILE"
+  | "VOICE"
+  | "EMOJI";
+
 export type IConsoleMethod =
   | "log"
   | "groupCollapsed"
@@ -49,14 +57,16 @@ export interface IFriendRequestNotification extends INotification {
 }
 
 export interface IChat {
-  members: IUser[];
-  messages: CollectionReference<IMessage>;
+  members: string[];
+  messages: IMessage[];
 }
 
 export interface ITeam {
   name: string;
   photo: string;
   createdBy: string;
+  admins: IUser[];
+  files: IFile[];
   members: IUser[];
   messages: CollectionReference<IMessage>;
 }
@@ -93,8 +103,9 @@ export interface IUser {
 }
 
 export interface IMessage {
-  from: IUser;
-  to: IUser;
+  writtenBy: string;
+  writtenAt: Timestamp;
+  isReaded: boolean;
   file?: string | IFile;
   image?: string | IFile;
   voice?: string | IFile;

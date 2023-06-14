@@ -14,7 +14,7 @@ defineEmits<{
 </script>
 
 <template>
-  <button
+  <div
     class="rounded-full flex items-center justify-center bg-[#121212] w-12 h-12"
     :class="[buttonClass, { 'w-24 h-24': isBig }]"
     @click="(e) => $emit('handleClick', e)"
@@ -26,5 +26,5 @@ defineEmits<{
       alt="Avatar picture"
     />
     <IconUser v-else class="text-white" :class="props.iconClass" />
-  </button>
+  </div>
 </template>

@@ -67,7 +67,14 @@ export const appRoutes = [
       },
     ],
   },
-
+  {
+    name: APP_ROUTE_NAMES.CHAT,
+    path: "/messages",
+    component: () => import("@pages/AppChat.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
   {
     name: APP_ROUTE_NAMES.LOGIN,
     path: "/login",

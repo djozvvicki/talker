@@ -4,6 +4,7 @@ import {
   APP_ROUTE_NAMES,
   APP_ROUTE_TITLES,
   FIREBASE_AUTH_ERRORS,
+  MESSAGE_TYPES,
 } from "./constants";
 export const getCapitalTitle = (appRouteName: APP_ROUTE_NAMES) => {
   const routeLabel = APP_ROUTE_TITLES[appRouteName];
@@ -64,7 +65,7 @@ export const getFieldFromErrorCode = (errCode: string) => {
   return field;
 };
 
-export function initSW() {
+export const initSW = () => {
   window.addEventListener("load", async () => {
     if ("serviceWorker" in navigator) {
       await navigator.serviceWorker.register("/talker-sw.js", {
@@ -72,4 +73,23 @@ export function initSW() {
       });
     }
   });
-}
+};
+
+export const formatMessageByType = (type: MESSAGE_TYPES, content: string) => {
+  switch (type) {
+    case MESSAGE_TYPES.TEXT:
+      return content;
+    case MESSAGE_TYPES.VOICE:
+      return " wysłał(a) Ci wiadomość głosową.";
+    case MESSAGE_TYPES.FILE:
+      return " wysłał(a) Ci plik.";
+    case MESSAGE_TYPES.IMAGE:
+      return " wysłał(a) Ci zdjęcie.";
+    case MESSAGE_TYPES.VIDEO:
+      return " wysłał(a) Ci film.";
+    case MESSAGE_TYPES.EMOJI:
+      return " wysłał(a) Ci emotke.";
+    default:
+      return " wysłał(a) wiadomość.";
+  }
+};

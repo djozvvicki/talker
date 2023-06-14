@@ -12,6 +12,15 @@ export enum NOTIFICATION_TYPES {
   BUY_COFFEE = "BUY_COFFEE",
 }
 
+export enum MESSAGE_TYPES {
+  VIDEO = "VIDEO",
+  TEXT = "TEXT",
+  IMAGE = "IMAGE",
+  FILE = "FILE",
+  VOICE = "VOICE",
+  EMOJI = "EMOJI",
+}
+
 export enum FIRESTORE_COLLECTION_NAMES {
   USERS = "users",
   CLIENT_TOKENS = "clientTokens",
@@ -37,11 +46,13 @@ export const APP_ROUTE_TITLES = {
   "app.call": "Połączenie głosowe",
   "app.forgotten_password": "Resetuj hasło",
   "app.notifications": "Powiadomienia",
+  "app.chat": "Chat",
 };
 
 export enum APP_ROUTE_NAMES {
   INDEX = "app.index",
   CALLS = "app.calls",
+  CHAT = "app.chat",
   CHATS = "app.chats",
   SETTINGS = "app.settings",
   TEAMS = "app.teams",
