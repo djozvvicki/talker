@@ -4,14 +4,15 @@ import SearchInput from "@/components/SearchInput.vue";
 import UsersModal from "@/components/modals/UsersModal.vue";
 import useFriendsService from "@/services/friends-service";
 import {
-  IconPlus,
   IconUsers,
   IconAlertTriangle,
   IconSend,
+  IconUserPlus,
 } from "@tabler/icons-vue";
 import { onMounted, ref } from "vue";
 
 const usersModalRef = ref();
+const friendName = ref<string>("");
 const { friends, initFriendsListener } = useFriendsService();
 
 const openUsersModal = () => {
@@ -27,7 +28,7 @@ onMounted(() => {
 
 <template>
   <div class="relative w-full h-[90%] overflow-hidden rounded-b-[70px] p-3">
-    <SearchInput />
+    <SearchInput v-model="friendName" />
     <div class="h-full rounded-b-[70px]">
       <div class="w-full flex items-center justify-between mt-4">
         <div class="flex">
@@ -41,35 +42,39 @@ onMounted(() => {
       <template v-if="friends.length > 0">
         <ul class="flex h-[calc(90%-1rem)]">
           <div class="overflow-scroll h-full w-full pb-5 mt-2">
-            <li
-              class="flex w-full mb-1 p-2 items-center justify-between rounded-full bg-[#12121207]"
-              v-for="friend in friends"
-              :key="friend.id"
-            >
-              <div class="flex items-center">
-                <template v-if="friend.profilePicture">
-                  <Avatar :img="friend.profilePicture" />
-                </template>
-                <template v-else>
-                  <Avatar buttonClass="w-10 h-10" />
-                </template>
-                <p
-                  class="ml-2 flex flex-col font-medium text-[#12121299] text-xl"
-                >
-                  <span class="m-0 text-[#121212]">
-                    {{ friend.name }}
-                  </span>
-                  <span class="m-0 p-0 text-sm">
-                    {{ friend.nick }}
-                  </span>
-                </p>
-              </div>
-              <div
-                class="flex items-center justify-center bg-[#121212] rounded-full w-10 h-10"
+            <template v-for="friend in friends" :key="friend.id">
+              <li
+                class="flex w-full mb-1 p-2 items-center justify-between rounded-full bg-[#12121207]"
+                v-if="
+                  friend.name.includes(friendName) ||
+                  friend.nick.includes(friendName)
+                "
               >
-                <IconSend class="scale-[90%] text-white" />
-              </div>
-            </li>
+                <div class="flex items-center">
+                  <template v-if="friend.profilePicture">
+                    <Avatar :img="friend.profilePicture" />
+                  </template>
+                  <template v-else>
+                    <Avatar buttonClass="w-10 h-10" />
+                  </template>
+                  <p
+                    class="ml-2 flex flex-col font-medium text-[#12121299] text-xl"
+                  >
+                    <span class="m-0 text-[#121212]">
+                      {{ friend.name }}
+                    </span>
+                    <span class="m-0 p-0 text-sm">
+                      {{ friend.nick }}
+                    </span>
+                  </p>
+                </div>
+                <div
+                  class="flex items-center justify-center bg-[#121212] rounded-full w-10 h-10"
+                >
+                  <IconSend class="scale-[90%] text-white" />
+                </div>
+              </li>
+            </template>
           </div>
         </ul>
       </template>
@@ -96,7 +101,7 @@ onMounted(() => {
         class="flex items-center justify-center rounded-full w-[60px] h-[60px] bg-[#121212]"
         @click="openUsersModal"
       >
-        <IconPlus class="text-white scale-[125%]" />
+        <IconUserPlus class="text-white scale-[125%]" />
       </button>
     </div>
     <UsersModal ref="usersModalRef" />

@@ -1,21 +1,20 @@
 <script lang="ts" setup>
 import { API_STATUSES, APP_ROUTE_NAMES } from "@/constants";
 import useUsersService from "@/services/users-service";
-import { ICreateAccountError } from "@/types";
+import useGeneralStore from "@/store/general-store";
+import type { ICreateAccountError } from "@/types";
 import { useAuthErrorHandler } from "@/utils";
 import Talker from "@assets/talker.svg";
 import { IconLogin } from "@tabler/icons-vue";
 import { IconLock } from "@tabler/icons-vue";
 import { IconAt } from "@tabler/icons-vue";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { UserCredential, createUserWithEmailAndPassword } from "firebase/auth";
 import { ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
 import { useFirebaseAuth } from "vuefire";
 
 const auth = useFirebaseAuth();
-const route = useRoute();
-const router = useRouter();
 const { createUserDocument } = useUsersService();
+const generalStore = useGeneralStore();
 const email = ref<string>("");
 const password = ref<string>("");
 const repeatPassword = ref<string>("");
@@ -26,7 +25,9 @@ const handleRegister = async () => {
   if (auth && password.value === repeatPassword.value) {
     isRegistering.value = true;
     if (auth) {
-      const [data, status] = await useAuthErrorHandler(async () => {
+      const [data, status] = await useAuthErrorHandler<
+        UserCredential | ICreateAccountError
+      >(async () => {
         return await createUserWithEmailAndPassword(
           auth,
           email.value,
@@ -34,13 +35,14 @@ const handleRegister = async () => {
         );
       });
       if (status === API_STATUSES.SUCCESS) {
-        await createUserDocument(data.user);
-        router.push({
-          path: (route.query.redirect as string) ?? APP_ROUTE_NAMES.CHATS,
-        });
+        const userData = await createUserDocument(
+          (data as UserCredential).user
+        );
+        generalStore.setUserData(userData);
+        generalStore.setActualView(APP_ROUTE_NAMES.CHATS);
         isRegistering.value = false;
       } else {
-        error.value = data;
+        error.value = data as ICreateAccountError;
         isRegistering.value = false;
       }
     }

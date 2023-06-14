@@ -1,48 +1,6 @@
 <script lang="ts" setup>
 import Talker from "@assets/talker.svg";
-import { APP_ROUTE_NAMES, SPLASH_SCREEN_TIME } from "@/constants";
-import { type Ref, onMounted, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
 import Loader from "@components/Loader.vue";
-import useNotificationService from "@/services/notifications-service";
-
-const route = useRoute();
-const router = useRouter();
-
-const splashScreenTimeout: Ref<NodeJS.Timeout | null> = ref(null);
-const { requestPermission, initCloudMessageListener } =
-  useNotificationService();
-
-const hideSplashScreen = () => {
-  router.replace({
-    name: route.query.nextPage
-      ? (route.query.nextPage as APP_ROUTE_NAMES)
-      : APP_ROUTE_NAMES.CHATS,
-  });
-  if (splashScreenTimeout.value) {
-    clearTimeout(splashScreenTimeout.value);
-    splashScreenTimeout.value = null;
-  }
-};
-
-onMounted(async () => {
-  await requestPermission();
-  initCloudMessageListener();
-
-  const nextPage =
-    route.fullPath !== "/"
-      ? route.fullPath.slice(1).replace("/", ".")
-      : APP_ROUTE_NAMES.CHATS;
-
-  router.replace({
-    name: APP_ROUTE_NAMES.SPLASH,
-    query: {
-      nextPage,
-    },
-  });
-
-  splashScreenTimeout.value = setTimeout(hideSplashScreen, SPLASH_SCREEN_TIME);
-});
 </script>
 
 <template>

@@ -2,14 +2,8 @@ import { APP_ROUTE_NAMES } from "@/constants";
 
 export const appRoutes = [
   {
-    name: APP_ROUTE_NAMES.SPLASH,
-    path: "/",
-    component: () => import("@pages/Splash.vue"),
-  },
-  {
     name: APP_ROUTE_NAMES.INDEX,
-    path: "/app",
-
+    path: "/",
     component: () => import("@pages/AppIndex.vue"),
     meta: {
       requiresAuth: true,
@@ -59,6 +53,14 @@ export const appRoutes = [
         name: APP_ROUTE_NAMES.NOTIFICATIONS,
         path: "/app/notifications",
         component: () => import("@pages/AppNotifications.vue"),
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        name: APP_ROUTE_NAMES.PROFILE,
+        path: "/app/profile",
+        component: () => import("@pages/AppProfile.vue"),
         meta: {
           requiresAuth: true,
         },

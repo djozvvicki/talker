@@ -24,9 +24,6 @@ router.beforeEach(async (to) => {
     if (!currentUser) {
       return {
         name: "app.login",
-        query: {
-          redirect: to.fullPath,
-        },
       };
     }
   }
@@ -40,7 +37,3 @@ app
     modules: [VueFireAuth()],
   })
   .mount("#app");
-
-router.replace({
-  name: "app.splash",
-});

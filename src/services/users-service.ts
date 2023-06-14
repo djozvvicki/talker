@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   onSnapshot,
   query,
   setDoc,
@@ -45,9 +46,20 @@ const useUsersService = () => {
       nick: `@${createdUser.email?.slice(0, createdUser.email.indexOf("@"))}`,
       profilePicture: "",
     });
+
+    return await getActualUserData(createdUser.uid);
   };
 
-  return { usersList, initUsersListener, createUserDocument };
+  const getActualUserData = async (uid: string) => {
+    return (await getDoc(doc(db, "users", uid))).data() as IUser;
+  };
+
+  return {
+    usersList,
+    initUsersListener,
+    createUserDocument,
+    getActualUserData,
+  };
 };
 
 export const sendClientToken = async (token: string) => {

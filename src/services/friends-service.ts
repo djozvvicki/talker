@@ -1,14 +1,17 @@
+import useGeneralStore from "@store/general-store";
 import { FIRESTORE_COLLECTION_NAMES } from "@/constants";
 import { useCurrentUser } from "vuefire";
 import {
   DocumentReference,
   addDoc,
+  arrayUnion,
   collection,
   doc,
   getDoc,
   onSnapshot,
   query,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import useLoggerService from "@services/logger-service";
 import { db } from "@services/firebase";
@@ -20,16 +23,13 @@ export const useFriendsService = () => {
   const currentUser = useCurrentUser();
   const { print } = useLoggerService();
   const friends = ref<IUser[]>([]);
+  const generalStore = useGeneralStore();
 
   const initFriendsListener = () => {
-    if (currentUser.value) {
+    if (currentUser.value && generalStore.userData) {
       const friendsQuery = query(
-        collection(
-          db,
-          FIRESTORE_COLLECTION_NAMES.USERS,
-          currentUser.value.uid,
-          FIRESTORE_COLLECTION_NAMES.FRIENDS
-        )
+        collection(db, FIRESTORE_COLLECTION_NAMES.USERS),
+        where("authID", "in", generalStore.userData.friends)
       );
 
       return onSnapshot(
@@ -72,7 +72,8 @@ export const useFriendsService = () => {
             isReaded: false,
             icon: fromData.profilePicture ?? "",
             from: fromRef,
-            message: `want to be your friend`,
+            message: `${fromData.name} want to be your friend`,
+            createdTime: new Date(),
             title: `Friend request`,
           };
 
@@ -123,27 +124,16 @@ export const useFriendsService = () => {
           `${FIRESTORE_COLLECTION_NAMES.USERS}`,
           currentUser.value.uid
         );
-        const userData = (await getDoc(userRef)).data() as IUser;
         const friendData = (await getDoc(friendRef)).data() as IUser;
 
-        await addDoc(
-          collection(
-            db,
-            `${FIRESTORE_COLLECTION_NAMES.USERS}/${userData.authID}/friends`
-          ),
-          {
-            ...friendData,
-          }
-        );
-        await addDoc(
-          collection(
-            db,
-            `${FIRESTORE_COLLECTION_NAMES.USERS}/${friendData.authID}/friends`
-          ),
-          {
-            ...userData,
-          }
-        );
+        await updateDoc(userRef, {
+          friends: arrayUnion(friendData.authID),
+        });
+
+        await updateDoc(friendRef, {
+          friends: arrayUnion(currentUser.value.uid),
+        });
+
         await updateDoc(
           doc(
             db,

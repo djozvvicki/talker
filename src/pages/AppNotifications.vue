@@ -1,15 +1,19 @@
 <script lang="ts" setup>
 import Avatar from "@/components/Avatar.vue";
 import { IconAlertTriangle } from "@tabler/icons-vue";
-import { onMounted, ref, watchEffect } from "vue";
+import { onMounted, onUnmounted, ref, watchEffect } from "vue";
 import useFriendsService from "@/services/friends-service";
 import useNotificationService from "@/services/notifications-service";
-import { IFriendRequestNotification, IUser } from "@/types";
-import { DocumentReference } from "firebase/firestore";
+import { IFriendRequestNotification } from "@/types";
 
 const { acceptFriendRequest, declineFriendRequest } = useFriendsService();
-const { notifications, setReadedNotifications, initNotificationListener } =
-  useNotificationService();
+const {
+  notifications,
+  unsubscribeNotificationsListener,
+  unsubscribeCloudMessagesListener,
+  setReadedNotifications,
+  initNotificationListener,
+} = useNotificationService();
 
 const clickedNotifications = ref<{ clicked: boolean }[]>(
   notifications.value.map(() => ({
@@ -22,25 +26,30 @@ const showNotificationDetails = (elementIndex: number) => {
     !clickedNotifications.value[elementIndex].clicked;
 };
 
+watchEffect(async () => {
+  if (
+    notifications.value &&
+    notifications.value.some(({ isReaded }) => !isReaded)
+  ) {
+    await setReadedNotifications();
+  }
+});
+
 watchEffect(() => {
   clickedNotifications.value = notifications.value.map(() => ({
     clicked: false,
   }));
 });
 
-const acceptRequest = async (
-  requestID: string,
-  fromRef: DocumentReference<IUser>
-) => {
-  acceptFriendRequest(requestID, fromRef);
-};
-const declineRequest = async (requestID: string) => {
-  declineFriendRequest(requestID);
-};
-
 onMounted(async () => {
   initNotificationListener();
-  setReadedNotifications();
+});
+
+onUnmounted(() => {
+  if (unsubscribeCloudMessagesListener.value)
+    unsubscribeCloudMessagesListener.value();
+  if (unsubscribeNotificationsListener.value)
+    unsubscribeNotificationsListener.value();
 });
 </script>
 
@@ -79,14 +88,14 @@ onMounted(async () => {
                     >
                       <button
                         class="bg-[red] p-1 rounded-xl pl-3 pr-3 text-white mr-2"
-                        @click="declineRequest(notification.id)"
+                        @click="declineFriendRequest(notification.id)"
                       >
                         Decline
                       </button>
                       <button
                         class="bg-[#121212] p-1 rounded-xl pl-3 pr-3 text-white mr-2"
                         @click="
-                          acceptRequest(
+                          acceptFriendRequest(
                             notification.id,
                             (notification as IFriendRequestNotification).from
                           )

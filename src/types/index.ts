@@ -84,7 +84,7 @@ export interface IUser {
   profilePicture: string;
   nick: string;
   name: string;
-  friends: CollectionReference<IUser>;
+  friends: string[];
   notifications: CollectionReference<INotification>;
   chats: CollectionReference<IChat>;
   teams: CollectionReference<ITeam>;

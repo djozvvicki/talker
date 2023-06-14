@@ -11,9 +11,9 @@ export const getCapitalTitle = (appRouteName: APP_ROUTE_NAMES) => {
   return routeLabel.charAt(0).toUpperCase() + routeLabel.slice(1);
 };
 
-export const useAuthErrorHandler = async (
+export const useAuthErrorHandler = async <T>(
   action: () => any
-): Promise<[any, string]> => {
+): Promise<[T, string]> => {
   let data: any;
   let status: string;
   try {

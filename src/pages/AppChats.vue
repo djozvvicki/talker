@@ -1,7 +1,10 @@
 <script lang="ts" setup>
 import SearchInput from "@/components/SearchInput.vue";
-import { IconSend } from "@tabler/icons-vue";
-import { IconMessage, IconAlertTriangle } from "@tabler/icons-vue";
+import {
+  IconMessage,
+  IconAlertTriangle,
+  IconMessagePlus,
+} from "@tabler/icons-vue";
 import { ref } from "vue";
 
 const chats = ref([]);
@@ -23,24 +26,26 @@ const chats = ref([]);
           >
             <IconAlertTriangle class="text-[#121212] scale-[200%]" />
           </div>
-          <div class="mb-32">
-            <h3 class="text-[1.5rem] text-[#121212] text-center font-bold">
-              Nie masz jeszcze ani jednej rozmowy
+          <div class="mb-32 flex flex-col items-center">
+            <h3
+              class="text-[1.5rem] w-[85%] text-[#121212] text-center font-bold"
+            >
+              Nie jesteś uczestnikiem ani jednej rozmowy
             </h3>
-            <p class="text-[#121212] text-center">
-              Kliknij przycisk po prawej stronie, aby znaleźć znajomego i do
-              niego napisać!
+            <p class="text-[#121212] text-center w-[85%]">
+              Wybierz znajomego przyciskiem na dole i napisz do niego lub
+              poczekaj, aż ktoś napisze do Ciebie
             </p>
           </div>
         </div>
       </template>
     </div>
 
-    <div ref="button" class="absolute bottom-6 right-6">
+    <div class="absolute bottom-6 right-6">
       <button
         class="flex items-center justify-center rounded-full w-[60px] h-[60px] bg-[#121212]"
       >
-        <IconSend class="text-white scale-[125%]" />
+        <IconMessagePlus class="text-white scale-[125%]" />
       </button>
     </div>
   </div>

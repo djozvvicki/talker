@@ -1,41 +1,45 @@
 <script lang="ts" setup>
 import { API_STATUSES, APP_ROUTE_NAMES } from "@/constants";
+import useUsersService from "@/services/users-service";
+import useGeneralStore from "@/store/general-store";
 import type { ICreateAccountError } from "@/types";
 import { useAuthErrorHandler } from "@/utils";
 import Talker from "@assets/talker.svg";
 import { IconLogin } from "@tabler/icons-vue";
 import { IconLock } from "@tabler/icons-vue";
 import { IconAt } from "@tabler/icons-vue";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { type UserCredential, signInWithEmailAndPassword } from "firebase/auth";
 import { ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
 import { useFirebaseAuth } from "vuefire";
 
 const auth = useFirebaseAuth();
-const route = useRoute();
-const router = useRouter();
 const email = ref<string>("");
 const password = ref<string>("");
 const isLoggingIn = ref<boolean>(false);
 const error = ref<ICreateAccountError | null>(null);
+const generalStore = useGeneralStore();
+const { getActualUserData } = useUsersService();
 
 const handleLogin = async () => {
   if (auth) {
     isLoggingIn.value = true;
-    const [data, status] = await useAuthErrorHandler(
+    const [data, status] = await useAuthErrorHandler<
+      UserCredential | ICreateAccountError
+    >(
       async () =>
         await signInWithEmailAndPassword(auth, email.value, password.value)
     );
     isLoggingIn.value = false;
 
     if (status === API_STATUSES.SUCCESS) {
-      router.push({
-        path:
-          (route.query.redirect as string) ??
-          APP_ROUTE_NAMES.CHATS.replace(".", "/"),
-      });
+      const userData = await getActualUserData(
+        (data as UserCredential).user.uid
+      );
+
+      generalStore.setUserData(userData);
+      generalStore.setActualView(APP_ROUTE_NAMES.CHATS);
     } else {
-      error.value = data;
+      error.value = data as ICreateAccountError;
     }
   }
 };
@@ -55,6 +59,7 @@ const handleLogin = async () => {
     >
       <IconAt class="absolute w-[3rem] text-[#12121290]" />
       <input
+        name="email"
         type="email"
         v-model="email"
         placeholder="Email"
@@ -71,6 +76,7 @@ const handleLogin = async () => {
       <IconLock class="absolute w-[3rem] text-[#12121290]" />
       <input
         type="password"
+        name="password"
         v-model="password"
         placeholder="Password"
         class="input-group__input"

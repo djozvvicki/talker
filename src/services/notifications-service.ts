@@ -2,11 +2,13 @@ import useLoggerService from "@services/logger-service";
 import { useCurrentUser } from "vuefire";
 import { db, messaging } from "@services/firebase";
 import {
+  type Unsubscribe,
   collection,
   doc,
   onSnapshot,
   query,
   updateDoc,
+  orderBy,
 } from "firebase/firestore";
 import { onMessage } from "firebase/messaging";
 import { ref } from "vue";
@@ -16,14 +18,17 @@ const useNotificationService = () => {
   const currentUser = useCurrentUser();
   const { print } = useLoggerService();
   const notifications = ref<INotification[]>([]);
+  const unsubscribeNotificationsListener = ref<Unsubscribe | null>(null);
+  const unsubscribeCloudMessagesListener = ref<Unsubscribe | null>(null);
 
   const initNotificationListener = () => {
     if (currentUser.value) {
       const notificationsQuery = query(
-        collection(db, "users", currentUser.value.uid, "notifications")
+        collection(db, "users", currentUser.value.uid, "notifications"),
+        orderBy("createdTime", "desc")
       );
 
-      return onSnapshot(
+      unsubscribeNotificationsListener.value = onSnapshot(
         notificationsQuery,
         { includeMetadataChanges: true },
         (snapshot) => {
@@ -49,10 +54,8 @@ const useNotificationService = () => {
   };
 
   const setReadedNotifications = async () => {
-    const notificationPromises: { (): Promise<void> }[] = [];
-
-    notifications.value.forEach((notification) => {
-      if (currentUser.value) {
+    notifications.value.forEach(async (notification) => {
+      if (currentUser.value && !notification.isReaded) {
         const notificationRef = doc(
           db,
           "users",
@@ -61,19 +64,12 @@ const useNotificationService = () => {
           notification.id
         );
 
-        notificationPromises.push(async () => {
-          await updateDoc(notificationRef, {
-            isReaded: true,
-          });
+        await updateDoc(notificationRef, {
+          isReaded: true,
         });
+        print("log", [`Notification with ID: ${notification.id} was readed!`]);
       }
     });
-
-    await Promise.all(
-      notificationPromises.map(
-        async (notificationPromise) => await notificationPromise()
-      )
-    );
   };
 
   const requestPermission = async () => {
@@ -102,45 +98,46 @@ const useNotificationService = () => {
   const initCloudMessageListener = () => {
     print("log", ["Initialize notification listener!"]);
 
-    onMessage(messaging, async (payload) => {
-      const reg = await navigator.serviceWorker.getRegistration();
+    unsubscribeCloudMessagesListener.value = onMessage(
+      messaging,
+      async (payload) => {
+        const reg = await navigator.serviceWorker.getRegistration();
 
-      if (payload.data && reg) {
-        print("groupCollapsed", ["Message data"]);
-        print("log", [payload.data]);
-        print("groupEnd", []);
+        if (payload.data && reg) {
+          print("groupCollapsed", ["Message data"]);
+          print("log", [payload.data]);
+          print("groupEnd", []);
 
-        reg.showNotification(
-          `${payload.data.fromName} ${payload.data.message}`,
-          {
-            tag: payload.data.type,
-            icon: "/talker.svg",
-            image:
-              payload.data.fromProfilePicture.length > 0
-                ? payload.data.fromProfilePicture
-                : "",
-            actions: [
-              {
-                action: "decline",
-                title: "Decline",
-              },
-              {
-                action: "accept",
-                title: "Accept",
-              },
-            ],
-          }
-        );
+          reg.showNotification(
+            `${payload.data.fromName} ${payload.data.message}`,
+            {
+              tag: payload.data.type,
+              icon: payload.data.fromProfilePicture || "/talker.svg",
+              actions: [
+                {
+                  action: "decline",
+                  title: "Decline",
+                },
+                {
+                  action: "accept",
+                  title: "Accept",
+                },
+              ],
+            }
+          );
 
-        await setNotifiedNotification(payload.data.requestID);
+          await setNotifiedNotification(payload.data.requestID);
+        }
       }
-    });
+    );
   };
 
   return {
     notifications,
     requestPermission,
+    unsubscribeCloudMessagesListener,
     initCloudMessageListener,
+    unsubscribeNotificationsListener,
     initNotificationListener,
     setNotifiedNotification,
     setReadedNotifications,

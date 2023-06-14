@@ -8,6 +8,7 @@ import Avatar from "../Avatar.vue";
 import { IUser } from "@/types";
 import useUsersService from "@/services/users-service";
 
+const userName = ref<string>("");
 const isVisible = ref<boolean>(false);
 const { usersList, initUsersListener } = useUsersService();
 const { friends, createFriendRequest } = useFriendsService();
@@ -25,11 +26,12 @@ const closeModal = () => {
 };
 
 const sortedUsers = computed(() => {
-  return usersList.value
-    .sort((a, b) => (a.nick < b.nick ? 1 : -1))
-    .filter((user) => {
-      return !friends.value.find((friend) => friend.authID === user.authID);
-    });
+  return usersList.value.filter((user) => {
+    return (
+      !friends.value.find((friend) => friend.authID === user.authID) &&
+      user.name.includes(userName.value)
+    );
+  });
 });
 
 onMounted(() => {
@@ -91,7 +93,7 @@ defineExpose({ openModal });
 
     <template #footer>
       <div class="w-full h-full flex items-center">
-        <SearchInput class="w-[calc(100%-4rem)]" />
+        <SearchInput v-model="userName" class="w-[calc(100%-4rem)]" />
         <button
           class="rounded-full ml-2 w-12 h-12 flex items-center justify-center bg-[#12121207]"
           @click="closeModal"
