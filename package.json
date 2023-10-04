@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
+    "build": "nuxt build --dotenv .env.production",
+    "dev": "nuxt dev --dotenv .env.local",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
@@ -24,8 +24,6 @@
     "@vueuse/nuxt": "^10.4.1",
     "date-fns": "^2.30.0",
     "nuxt-socket-io": "^3.0.13",
-    "pinia": "^2.1.6",
-    "socket.io": "^4.7.2",
-    "socket.io-client": "^4.7.2"
+    "pinia": "^2.1.6"
   }
 }

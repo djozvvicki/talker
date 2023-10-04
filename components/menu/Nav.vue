@@ -15,7 +15,6 @@ const APP_NAVIGATION = {
   PROFILE: "/profile",
 };
 
-const route = useRoute();
 const activeClass = "text-[#39e26c]";
 </script>
 
@@ -24,7 +23,7 @@ const activeClass = "text-[#39e26c]";
     <NuxtLink
       class="w-full flex items-center justify-center"
       :class="[
-        route.path === APP_NAVIGATION.INDEX ? activeClass : 'text-white',
+        $route.path === APP_NAVIGATION.INDEX ? activeClass : 'text-white',
       ]"
       :to="APP_NAVIGATION.INDEX"
     >
@@ -33,7 +32,7 @@ const activeClass = "text-[#39e26c]";
     <NuxtLink
       class="w-full flex items-center justify-center"
       :class="[
-        route.path === APP_NAVIGATION.USERS ? activeClass : 'text-white',
+        $route.path === APP_NAVIGATION.USERS ? activeClass : 'text-white',
       ]"
       :to="APP_NAVIGATION.USERS"
     >
@@ -42,7 +41,7 @@ const activeClass = "text-[#39e26c]";
     <NuxtLink
       class="w-full flex items-center justify-center"
       :class="[
-        route.path === APP_NAVIGATION.CALLS ? activeClass : 'text-white',
+        $route.path === APP_NAVIGATION.CALLS ? activeClass : 'text-white',
       ]"
       :to="APP_NAVIGATION.CALLS"
     >
@@ -51,7 +50,7 @@ const activeClass = "text-[#39e26c]";
     <NuxtLink
       class="w-full flex items-center justify-center"
       :class="[
-        route.path === APP_NAVIGATION.NOTIFICATIONS
+        $route.path === APP_NAVIGATION.NOTIFICATIONS
           ? activeClass
           : 'text-white',
       ]"
@@ -62,7 +61,7 @@ const activeClass = "text-[#39e26c]";
     <NuxtLink
       class="w-full flex items-center justify-center"
       :class="[
-        route.path === APP_NAVIGATION.PROFILE ? activeClass : 'text-white',
+        $route.path === APP_NAVIGATION.PROFILE ? activeClass : 'text-white',
       ]"
       :to="APP_NAVIGATION.PROFILE"
     >

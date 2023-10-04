@@ -11,5 +11,3 @@ export interface IUser {
   age: number;
   createdAt: string;
 }
-
-export type IAuthStatus = "error" | "authenticated" | "waiting";

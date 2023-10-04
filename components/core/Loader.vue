@@ -3,8 +3,14 @@ import logo from "~/assets/img/logo.png";
 </script>
 
 <template>
-  <div class="w-full h-screen flex flex-col items-center justify-center">
-    <img :src="logo" alt="logo" class="w-2/3 mb-4 -mt-12" />
+  <div
+    class="absolute top-0 bg-transparent w-full h-full z-[9999] bg-white flex flex-col items-center justify-center"
+  >
+    <img
+      :src="logo"
+      alt="logo"
+      class="w-1/2 sm:max-w-[250px] lg:max-w-[300px] md:w-1/4 mb-4 -mt-12"
+    />
     <h1 class="text-5xl font-black text-black">Talker</h1>
     <div class="dots">
       <span class="dot"></span>

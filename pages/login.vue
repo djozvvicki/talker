@@ -12,6 +12,7 @@ const handleSignIn = async () => {
 };
 
 definePageMeta({
+  middleware: ["login"],
   layout: "empty",
 });
 

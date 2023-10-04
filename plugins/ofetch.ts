@@ -32,13 +32,14 @@ export default defineNuxtPlugin((_nuxtApp) => {
     onResponseError({ response }) {
       const authStore = useAuthStore();
 
-      if (!response.ok) {
-        authStore.status = "error";
-        showError({
-          statusCode: response._data?.statusCode ?? response.status,
-          statusMessage: response._data?.message ?? response.statusText,
-        });
+      if (response.status === 401) {
+        authStore.token = null;
       }
+
+      showError({
+        statusCode: response._data?.statusCode ?? response.status,
+        statusMessage: response._data?.message ?? response.statusText,
+      });
     },
     retry: 0,
   });
