@@ -1,65 +1,52 @@
-import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
-import type { IToken, IUser } from "~/types/stores/auth";
-import { format } from "date-fns";
+import { defineStore } from "pinia";
+import type { IUser, Nullable } from "~/types/global";
+import { useAuthService } from "~/services/auth.service";
+import { ILoginUser } from "~/types/auth";
+
+interface IUserWithStatus {
+  user: Nullable<IUser>;
+  loggedIn: boolean;
+}
 
 export const useAuthStore = defineStore("auth", () => {
-  const config = useRuntimeConfig();
-  const token = useStorage("TALKER_ID", null as string | null);
-  const isReady = ref<boolean>(false);
-  const error = ref<any>();
-  const userData = ref<IUser | null>(null);
+  const authService = useAuthService();
 
-  const isAuthenticated = computed(() => {
-    return (token.value && token.value.length > 0) || false;
-  });
+  const userData = useStorage(
+    "TALKER_USERSTATUS",
+    {
+      user: null,
+      loggedIn: false,
+    } as IUserWithStatus,
+    localStorage,
+    {
+      serializer: useSerializer<IUserWithStatus>(),
+    }
+  );
 
-  const getUserData = async () => {
-    if (isAuthenticated) {
-      isReady.value = false;
-      if (!userData.value) {
-        console.log("GETTING USER_DATA", format(new Date(), "hh:mm:ss"));
-        userData.value = await $fetch<IUser>(config.public.AUTH_PROFILE_URL, {
-          method: "GET",
-        });
+  const login = async (user: ILoginUser) => {
+    try {
+      const loggedUser = await authService.login(user);
+
+      if (userData.value) {
+        userData.value.user = loggedUser;
+        userData.value.loggedIn = true;
+        navigateTo("/");
       }
-      isReady.value = true;
+    } catch (err) {
+      if (userData.value) userData.value.loggedIn = false;
+      throw err;
     }
   };
 
-  const signIn = async (userName: string, password: string) => {
-    const { access_token } = await $fetch<IToken>(
-      config.public.AUTH_LOGIN_URL,
-      {
-        method: "POST",
-        body: {
-          userName,
-          password,
-        },
-      }
-    );
-
-    token.value = access_token;
-
-    await getUserData();
-    navigateTo("/");
+  const logout = () => {
+    if (userData.value) {
+      authService.logout();
+      userData.value.user = null;
+      userData.value.loggedIn = false;
+      return navigateTo("/login");
+    }
   };
 
-  const signOut = (newReady: boolean = false) => {
-    userData.value = null;
-    token.value = null;
-    isReady.value = newReady;
-    navigateTo("/login");
-  };
-
-  return {
-    isReady,
-    userData,
-    token,
-    error,
-    isAuthenticated,
-    signIn,
-    signOut,
-    getUserData,
-  };
+  return { login, logout, userData };
 });

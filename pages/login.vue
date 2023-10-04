@@ -5,11 +5,7 @@ import { useAuthStore } from "~/stores/auth.store";
 const userName = useStorage("LOGIN_userName", "");
 const password = useStorage("LOGIN_password", "");
 
-const authStore = useAuthStore();
-
-const handleSignIn = async () => {
-  await authStore.signIn(userName.value, password.value);
-};
+const { login } = useAuthStore();
 
 definePageMeta({
   middleware: ["login"],
@@ -36,7 +32,7 @@ useHead({
       class="text-black bg-transparent border-b border-black p-2 outline-none focus:bg-gray-200"
     />
     <button
-      @click.prevent="handleSignIn"
+      @click.prevent="() => login({ userName, password })"
       class="text-white bg-black p-2 border-2 self-start w-1/2 rounded-lg"
     >
       Sign in

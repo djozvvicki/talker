@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { IconExclamationCircle } from "@tabler/icons-vue";
-import { useAuthStore } from "~/stores/auth.store";
-
-const authStore = useAuthStore();
 
 defineProps({ error: Object });
 </script>
@@ -27,7 +24,7 @@ defineProps({ error: Object });
     <button
       v-else
       class="text-white bg-black focus:outline-black p-2 px-4 rounded-lg text-lg mt-4"
-      @click="authStore.signOut(true)"
+      @click="navigateTo('/login')"
     >
       Zaloguj się
     </button>
