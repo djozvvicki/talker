@@ -36,6 +36,7 @@ export default defineNuxtConfig({
     public: {
       AUTH_LOGIN_URL: process.env.AUTH_LOGIN_URL,
       AUTH_USER_URL: process.env.AUTH_USER_URL,
+      AUTH_REFRESH_URL: process.env.AUTH_REFRESH_URL,
     },
   },
   postcss: {

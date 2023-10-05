@@ -13,7 +13,7 @@ export const useAuthStore = defineStore("auth", () => {
   const authService = useAuthService();
 
   const userData = useStorage(
-    "TALKER_USERSTATUS",
+    "TALKER_USER",
     {
       user: null,
       loggedIn: false,
@@ -26,10 +26,9 @@ export const useAuthStore = defineStore("auth", () => {
 
   const login = async (user: ILoginUser) => {
     try {
-      const loggedUser = await authService.login(user);
+      await authService.login(user);
 
       if (userData.value) {
-        userData.value.user = loggedUser;
         userData.value.loggedIn = true;
         navigateTo("/");
       }

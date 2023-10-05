@@ -6,7 +6,8 @@ export const useTokenService = () => {
     serializer: useSerializer<ITokens>(),
   });
 
-  const setTokens = (newUser: Nullable<ITokens>) => (tokens.value = newUser);
+  const setTokens = (newTokens: Nullable<ITokens>) =>
+    (tokens.value = newTokens);
   const clearTokens = () => (tokens.value = null);
   const getAccessToken = () => tokens.value?.accessToken;
   const getRefreshToken = () => tokens.value?.refreshToken;

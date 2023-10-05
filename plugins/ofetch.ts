@@ -3,63 +3,70 @@ import { useTokenService } from "~/services/token.service";
 import { ITokens } from "~/types/global";
 
 export default defineNuxtPlugin(() => {
-  const { user, setUser, getAccessToken, getRefreshToken } = useTokenService();
+  const { tokens, setTokens } = useTokenService();
 
   globalThis.$fetch = ofetch.create({
-    onRequest({ options }) {
-      const token = getAccessToken();
-
+    onRequest({ options, request }) {
       options.timeout = 5000;
-      options.headers = {
-        ...options.headers,
-        Accept: "application/json",
-      };
+      options.headers = new Headers(options.headers);
+      options.ignoreResponseError = options.headers.has("x-ignore-error");
 
-      if (token) {
-        options.headers = {
+      if (
+        !options.headers.has("x-token-refresh") &&
+        tokens.value?.accessToken
+      ) {
+        console.log("Using accessToken", request);
+        options.headers = new Headers({
           ...options.headers,
-          Authorization: `Bearer ${token}`,
-        };
+          Authorization: `Bearer ${tokens.value.accessToken}`,
+        });
+      }
+
+      if (
+        options.headers.has("x-token-refresh") &&
+        tokens.value?.refreshToken
+      ) {
+        console.log("Using refreshToken", request);
+        options.headers = new Headers({
+          ...options.headers,
+          Authorization: `Bearer ${tokens.value.refreshToken}`,
+        });
       }
     },
-    async onResponseError({ options, response }) {
+    async onResponseError({ options, response, request }) {
+      const config = useRuntimeConfig();
+      options.headers = new Headers(options.headers);
+
       if (
-        options.baseURL !== "http://localhost:7001/v1/auth/login" &&
-        response
+        ![
+          config.public.AUTH_LOGIN_URL,
+          config.public.AUTH_REFRESH_URL,
+        ].includes(response.url) &&
+        !options.headers.has("x-token-refresh")
       ) {
-        if (response.status === 401 && !options.retry) {
-          options.retry = 1;
-
-          const actualRefreshToken = getRefreshToken();
-
-          if (user.value && actualRefreshToken) {
-            try {
-              const tokens = await $fetch<ITokens>(
-                `http://localhost:7001/v1/auth/refresh`,
-                {
-                  headers: {
-                    Authorization: actualRefreshToken,
-                  },
-                }
-              );
-
-              const { refreshToken, accessToken } = tokens;
-
-              setUser({ ...user.value, refreshToken, accessToken });
-            } catch (err) {
-              console.log(err);
-              showError({
-                statusCode: response.status,
-                statusMessage: response.statusText,
-              });
+        try {
+          const { accessToken, refreshToken } = await $fetch<ITokens>(
+            "http://localhost:7001/v1/auth/refresh",
+            {
+              headers: {
+                "x-token-refresh": "true",
+              },
             }
-          }
+          );
+
+          setTokens({ accessToken, refreshToken });
+
+          // return await $fetch(request); // Uncomment when ofetch will be updated
+        } catch (err) {
+          console.log("[API Response]", response);
         }
-        console.log("[API Response]", response);
+      }
+
+      if (response.url === config.public.AUTH_REFRESH_URL) {
+        tokens.value = null;
         showError({
-          name: response._data.error ?? response.type,
-          statusCode: response._data?.statusCode ?? response.status,
-          statusMessage: response._data?.message ?? response.statusText,
+          statusCode: 401,
+          statusMessage: "Sesja wygasła",
         });
       }
     },

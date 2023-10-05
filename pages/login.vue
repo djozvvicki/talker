@@ -8,7 +8,6 @@ const password = useStorage("LOGIN_password", "");
 const { login } = useAuthStore();
 
 definePageMeta({
-  middleware: ["login"],
   layout: "empty",
 });
 

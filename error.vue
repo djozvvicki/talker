@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { IconExclamationCircle } from "@tabler/icons-vue";
 
+const handleRouteChange = () => {
+  console.log("Handle Route change");
+  navigateTo("/login");
+};
+
 defineProps({ error: Object });
 </script>
 
@@ -24,7 +29,7 @@ defineProps({ error: Object });
     <button
       v-else
       class="text-white bg-black focus:outline-black p-2 px-4 rounded-lg text-lg mt-4"
-      @click="navigateTo('/login')"
+      @click="handleRouteChange"
     >
       Zaloguj się
     </button>

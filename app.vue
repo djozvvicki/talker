@@ -4,7 +4,10 @@ import { useAuthStore } from "./stores/auth.store";
 const route = useRoute();
 const { userData } = useAuthStore();
 
-const showPage = computed(() => route.path === "/login" || userData?.loggedIn);
+const showPage = computed(
+  () =>
+    ["login", "register"].includes(route.name as string) || userData?.loggedIn
+);
 </script>
 
 <template>
