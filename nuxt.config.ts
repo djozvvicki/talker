@@ -22,8 +22,11 @@ export default defineNuxtConfig({
   ssr: false,
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
-  plugins: ["~/plugins/ofetch.ts", "~/plugins/error-handler.ts"],
+  plugins: ["~/plugins/ofetch.ts"],
   modules: ["@pinia/nuxt", "nuxt-socket-io"],
+  routeRules: {
+    "/": { redirect: "/app" },
+  },
   io: {
     sockets: [
       {

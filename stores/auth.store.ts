@@ -21,7 +21,7 @@ export const useAuthStore = defineStore("auth", () => {
     localStorage,
     {
       serializer: useSerializer<IUserWithStatus>(),
-    }
+    },
   );
 
   const login = async (user: ILoginUser) => {
@@ -30,7 +30,7 @@ export const useAuthStore = defineStore("auth", () => {
 
       if (userData.value) {
         userData.value.loggedIn = true;
-        navigateTo("/");
+        navigateTo("/app");
       }
     } catch (err) {
       if (userData.value) userData.value.loggedIn = false;

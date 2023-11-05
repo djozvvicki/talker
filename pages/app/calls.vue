@@ -9,7 +9,7 @@ useHead({
 </script>
 
 <template>
-  <div class="text-black w-full flex flex-col items-center">
-    <h1 class="text-3xl text-center">CALLS</h1>
+  <div class="flex w-full flex-col items-center text-white">
+    <h1 class="text-center text-3xl">Calls</h1>
   </div>
 </template>

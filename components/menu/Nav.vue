@@ -8,20 +8,22 @@ import {
 } from "@tabler/icons-vue";
 
 const APP_NAVIGATION = {
-  INDEX: "/",
-  USERS: "/users",
-  CALLS: "/calls",
-  NOTIFICATIONS: "/notifications",
-  PROFILE: "/profile",
+  INDEX: "/app",
+  USERS: "/app/users",
+  CALLS: "/app/calls",
+  NOTIFICATIONS: "/app/notifications",
+  PROFILE: "/app/profile",
 };
 
-const activeClass = "text-[#39e26c]";
+const activeClass = "text-[#39e26c] bg-[#121212]";
 </script>
 
 <template>
-  <footer class="w-full h-16 absolute bottom-0 bg-black flex">
+  <footer
+    class="w-full h-16 absolute bottom-0 bg-black flex justify-around md:flex-col md:w-16 md:h-full md:justify-start p-2"
+  >
     <NuxtLink
-      class="w-full flex items-center justify-center"
+      class="w-12 flex items-center justify-center h-full md:h-12 rounded-full"
       :class="[
         $route.path === APP_NAVIGATION.INDEX ? activeClass : 'text-white',
       ]"
@@ -30,7 +32,7 @@ const activeClass = "text-[#39e26c]";
       <IconMessages />
     </NuxtLink>
     <NuxtLink
-      class="w-full flex items-center justify-center"
+      class="w-12 flex items-center justify-center h-full md:h-12 rounded-full"
       :class="[
         $route.path === APP_NAVIGATION.USERS ? activeClass : 'text-white',
       ]"
@@ -39,7 +41,7 @@ const activeClass = "text-[#39e26c]";
       <IconUsersGroup />
     </NuxtLink>
     <NuxtLink
-      class="w-full flex items-center justify-center"
+      class="w-12 flex items-center justify-center h-full md:h-12 rounded-full"
       :class="[
         $route.path === APP_NAVIGATION.CALLS ? activeClass : 'text-white',
       ]"
@@ -48,7 +50,7 @@ const activeClass = "text-[#39e26c]";
       <IconPhone />
     </NuxtLink>
     <NuxtLink
-      class="w-full flex items-center justify-center"
+      class="w-12 flex items-center justify-center h-full md:h-12 rounded-full"
       :class="[
         $route.path === APP_NAVIGATION.NOTIFICATIONS
           ? activeClass
@@ -59,7 +61,7 @@ const activeClass = "text-[#39e26c]";
       <IconBell />
     </NuxtLink>
     <NuxtLink
-      class="w-full flex items-center justify-center"
+      class="w-12 flex items-center justify-center h-full md:h-12 rounded-full"
       :class="[
         $route.path === APP_NAVIGATION.PROFILE ? activeClass : 'text-white',
       ]"

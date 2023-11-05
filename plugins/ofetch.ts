@@ -15,7 +15,7 @@ export default defineNuxtPlugin(() => {
         !options.headers.has("x-token-refresh") &&
         tokens.value?.accessToken
       ) {
-        console.log("Using accessToken", request);
+        logger.log(request, "Access Token");
         options.headers = new Headers({
           ...options.headers,
           Authorization: `Bearer ${tokens.value.accessToken}`,
@@ -26,14 +26,14 @@ export default defineNuxtPlugin(() => {
         options.headers.has("x-token-refresh") &&
         tokens.value?.refreshToken
       ) {
-        console.log("Using refreshToken", request);
+        logger.log(request, "Refresh Token");
         options.headers = new Headers({
           ...options.headers,
           Authorization: `Bearer ${tokens.value.refreshToken}`,
         });
       }
     },
-    async onResponseError({ options, response, request }) {
+    async onResponseError({ options, response }) {
       const config = useRuntimeConfig();
       options.headers = new Headers(options.headers);
 
@@ -51,14 +51,12 @@ export default defineNuxtPlugin(() => {
               headers: {
                 "x-token-refresh": "true",
               },
-            }
+            },
           );
 
           setTokens({ accessToken, refreshToken });
-
-          // return await $fetch(request); // Uncomment when ofetch will be updated
         } catch (err) {
-          console.log("[API Response]", response);
+          logger.log(response, "[API Response]");
         }
       }
 
