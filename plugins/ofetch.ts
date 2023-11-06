@@ -3,6 +3,7 @@ import { useTokenService } from "~/services/token.service";
 import { ITokens } from "~/types/global";
 
 export default defineNuxtPlugin(() => {
+  const config = useRuntimeConfig();
   const { tokens, setTokens } = useTokenService();
 
   globalThis.$fetch = ofetch.create({
@@ -33,13 +34,21 @@ export default defineNuxtPlugin(() => {
         });
       }
     },
-    async onResponseError({ options, response }) {
-      const config = useRuntimeConfig();
+    async onRequestError({}) {
+      showError({
+        statusCode: 400,
+        statusMessage: "Problem z połączeniem.",
+      });
+      return;
+    },
+    async onResponseError({ options, response, error }) {
       options.headers = new Headers(options.headers);
 
       if (
         ![
           config.public.AUTH_LOGIN_URL,
+          config.public.AUTH_REGISTER_URL,
+          config.public.AUTH_LOGOUT_URL,
           config.public.AUTH_REFRESH_URL,
         ].includes(response.url) &&
         !options.headers.has("x-token-refresh")
@@ -55,8 +64,15 @@ export default defineNuxtPlugin(() => {
           );
 
           setTokens({ accessToken, refreshToken });
+          return;
         } catch (err) {
           logger.log(response, "[API Response]");
+
+          showError({
+            statusMessage: "Błąd połączenia",
+            statusCode: response.status,
+          });
+          return;
         }
       }
 
@@ -66,7 +82,16 @@ export default defineNuxtPlugin(() => {
           statusCode: 401,
           statusMessage: "Sesja wygasła",
         });
+        return;
       }
+
+      showError({
+        statusCode: response.status ?? 400,
+        statusMessage:
+          response._data.message ??
+          error?.message ??
+          "Nieznany błąd. Zgłoś do administratora",
+      });
     },
   });
 });

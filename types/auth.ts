@@ -4,5 +4,5 @@ export interface ILoginUser {
 }
 
 export interface IRegisterUser extends ILoginUser {
-  email: string;
+  displayName: string;
 }
