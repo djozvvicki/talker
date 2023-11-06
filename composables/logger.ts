@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const styles = `
+export const styles = `
   font-weight: bold;
   background-color: #39e26c;
   color: black;
@@ -8,7 +8,7 @@ const styles = `
   padding-top: 4px;
 `;
 
-const infoStyles = `
+export const infoStyles = `
   font-weight: bold;
   background-color: #3977e2;
   color: black;
@@ -17,7 +17,7 @@ const infoStyles = `
   padding-top: 4px;
 `;
 
-const errorStyles = `
+export const errorStyles = `
   font-weight: bold;
   background-color: #e23939;
   color: black;
@@ -27,11 +27,11 @@ const errorStyles = `
 `;
 
 export const logger = {
-  log: (msg: string | any, module = "Talker") => {
-    console.log("%c%s", styles, module, msg);
+  log: (...msg: any) => {
+    console.log("%cTalker", styles, ...msg);
   },
-  info: (msg: string) => {
-    console.info("%cTalker", infoStyles, msg);
+  info: (...msg: any) => {
+    console.info("%cTalker", infoStyles, ...msg);
   },
   error: (msg: string) => {
     console.error("%cTalker", errorStyles, msg);

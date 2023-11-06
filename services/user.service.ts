@@ -6,6 +6,8 @@ export const useUserService = () => {
   const { userData } = useAuthStore();
 
   const fetchUserData = async () => {
+    logger.info("Fetch user data");
+
     const user: Nullable<IUser> = await $fetch(
       `${config.public.AUTH_USER_URL}`,
       {

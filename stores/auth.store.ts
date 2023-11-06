@@ -13,7 +13,7 @@ export const useAuthStore = defineStore("auth", () => {
   const authService = useAuthService();
 
   const userData = useStorage(
-    "TALKER_USER",
+    "TLKR_usr",
     {
       user: null,
       loggedIn: false,
@@ -59,5 +59,11 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
-  return { login, register, logout, userData };
+  const clearUserData = () => {
+    if (userData.value) {
+      userData.value = null;
+    }
+  };
+
+  return { login, register, logout, userData, clearUserData };
 });

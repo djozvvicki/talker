@@ -6,6 +6,7 @@ import {
   IconUsersGroup,
   IconUser,
 } from "@tabler/icons-vue";
+import { useAuthStore } from "~/stores/auth.store";
 
 const APP_NAVIGATION = {
   INDEX: "/app",
@@ -14,6 +15,8 @@ const APP_NAVIGATION = {
   NOTIFICATIONS: "/app/notifications",
   PROFILE: "/app/profile",
 };
+
+const { userData } = useAuthStore();
 
 const activeClass = "text-[#39e26c] bg-[#121212]";
 </script>
@@ -67,7 +70,14 @@ const activeClass = "text-[#39e26c] bg-[#121212]";
       ]"
       :to="APP_NAVIGATION.PROFILE"
     >
-      <IconUser />
+      <IconUser v-if="!userData?.user" />
+      <template v-else>
+        <img
+          :src="userData?.user.photoURL"
+          alt="Profile photo"
+          class="rounded-full"
+        />
+      </template>
     </NuxtLink>
   </footer>
 </template>

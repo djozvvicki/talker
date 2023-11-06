@@ -1,9 +1,9 @@
 import { useStorage } from "@vueuse/core";
 import { ITokens, Nullable } from "~/types/global";
-import { isAfter, parseISO } from "date-fns";
+import { format } from "date-fns";
 
 export const useTokenService = () => {
-  const tokens = useStorage("TALKER_IDS", null, localStorage, {
+  const tokens = useStorage("TLKR_tkns", null, localStorage, {
     serializer: useSerializer<ITokens>(),
   });
 
@@ -26,6 +26,11 @@ export const useTokenService = () => {
     );
 
     const { exp } = JSON.parse(jsonPayload);
+
+    logger.info(
+      `Refresh token expired at ${format(exp * 1000, "dd.MM.yyyy HH:mm:ss")}`,
+    );
+
     const expired = Date.now() >= exp * 1000;
     return expired;
   };

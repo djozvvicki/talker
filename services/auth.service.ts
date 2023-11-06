@@ -5,7 +5,7 @@ import { useAuthStore } from "~/stores/auth.store";
 
 export const useAuthService = () => {
   const config = useRuntimeConfig();
-  const { userData } = useAuthStore();
+  const { clearUserData } = useAuthStore();
   const { setTokens, clearTokens } = useTokenService();
 
   const login = async ({ userName, password }: ILoginUser) => {
@@ -52,11 +52,7 @@ export const useAuthService = () => {
     });
 
     clearTokens();
-    if (userData) {
-      userData.loggedIn = false;
-      userData.user = null;
-    }
-
+    clearUserData();
     navigateTo("/login");
   };
 

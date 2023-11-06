@@ -31,7 +31,7 @@ useHead({
       :src="bg"
       alt="Page background"
     />
-    <div class="z-2 relative flex h-5/6 flex-col items-center justify-center">
+    <div class="z-2 relative flex h-4/6 flex-col items-center justify-center">
       <img :src="logo" alt="123" class="mb-2 xs:h-[10rem] xs:w-[10rem]" />
       <h1 class="dark:text-text text-[42px] font-black">Talker</h1>
       <p class="text-md w-10/12 text-center font-semibold">

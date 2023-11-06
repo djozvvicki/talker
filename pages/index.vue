@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import logo from "~/assets/img/logo.png";
 import bg from "~/assets/img/index-bg.png";
+import { useAuthStore } from "~/stores/auth.store";
 
 definePageMeta({
   layout: "empty",
@@ -26,7 +27,7 @@ useHead({
         moments
       </p>
     </div>
-    <div class="absolute bottom-[0.1rem] flex w-full flex-col gap-2 p-2">
+    <div class="absolute bottom-[0.5rem] flex w-full flex-col gap-2 p-2">
       <button
         class="w-full self-start rounded-lg bg-dark px-4 py-2 text-light"
         @click.prevent="() => navigateTo('/app')"

@@ -23,7 +23,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
   plugins: ["~/plugins/ofetch.ts"],
-  modules: ["@pinia/nuxt", "nuxt-socket-io", "@vite-pwa/nuxt"],
+  modules: ["@pinia/nuxt", "nuxt-socket-io", "@vite-pwa/nuxt", "@nuxt/image"],
+  image: {
+    format: ["webp"],
+  },
   io: {
     sockets: [
       {
@@ -52,7 +55,7 @@ export default defineNuxtConfig({
     manifest: {
       name: "Talker - Chat App",
       short_name: "Talker",
-      theme_color: "#DDDDDD",
+      theme_color: "#000000",
       icons: [
         {
           src: "pwa-192x192.png",
@@ -75,12 +78,11 @@ export default defineNuxtConfig({
     workbox: {
       navigateFallback: "/",
       globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
+      disableDevLogs: true,
     },
     client: {
       installPrompt: true,
-      // you don't need to include this: only for testing purposes
-      // if enabling periodic sync for update use 1 hour or so (periodicSyncForUpdates: 3600)
-      periodicSyncForUpdates: 20,
+      periodicSyncForUpdates: 300,
     },
     devOptions: {
       enabled: true,
