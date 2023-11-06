@@ -22,7 +22,7 @@ export default defineNuxtConfig({
   ssr: false,
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
-  plugins: ["~/plugins/ofetch.ts", "~/plugins/error-handler.ts"],
+  plugins: ["~/plugins/ofetch.ts"],
   modules: ["@pinia/nuxt", "nuxt-socket-io"],
   io: {
     sockets: [
@@ -36,6 +36,9 @@ export default defineNuxtConfig({
     public: {
       AUTH_LOGIN_URL: process.env.AUTH_LOGIN_URL,
       AUTH_USER_URL: process.env.AUTH_USER_URL,
+      AUTH_REFRESH_URL: process.env.AUTH_REFRESH_URL,
+      AUTH_REGISTER_URL: process.env.AUTH_REGISTER_URL,
+      AUTH_LOGOUT_URL: process.env.AUTH_LOGOUT_URL,
     },
   },
   postcss: {

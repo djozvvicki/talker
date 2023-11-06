@@ -1,12 +1,14 @@
-import { ITokens, IUser } from "~/types/global";
+import { ITokens } from "~/types/global";
 import { useTokenService } from "./token.service";
 import { ILoginUser, IRegisterUser } from "~/types/auth";
+import { useAuthStore } from "~/stores/auth.store";
 
 export const useAuthService = () => {
   const config = useRuntimeConfig();
+  const { userData } = useAuthStore();
   const { setTokens, clearTokens } = useTokenService();
 
-  const login = async ({ userName, password }: ILoginUser): Promise<IUser> => {
+  const login = async ({ userName, password }: ILoginUser) => {
     const { accessToken, refreshToken } = await $fetch<ITokens>(
       `${config.public.AUTH_LOGIN_URL}`,
       {
@@ -15,51 +17,47 @@ export const useAuthService = () => {
           userName,
           password,
         },
-      }
+      },
     );
 
-    setTokens({ accessToken, refreshToken });
-
-    const loggedUser = await $fetch<IUser>(`${config.public.AUTH_USER_URL}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+    setTokens({
+      accessToken,
+      refreshToken,
     });
-
-    return { ...loggedUser, accessToken, refreshToken };
   };
 
-  const register = async ({ userName, password, email }: IRegisterUser) => {
-    const { accessToken, refreshToken } = await $fetch<IUser>(
+  const register = async ({
+    userName,
+    password,
+    displayName,
+  }: IRegisterUser) => {
+    const { accessToken, refreshToken } = await $fetch<ITokens>(
       `${config.public.AUTH_REGISTER_URL}`,
       {
         method: "POST",
         body: {
           userName,
           password,
-          email,
+          displayName,
         },
-      }
+      },
     );
 
     setTokens({ accessToken, refreshToken });
-
-    const registeredUser = await $fetch<IUser>(
-      `${config.public.AUTH_USER_URL}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-
-    return registeredUser;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await $fetch(`${config.public.AUTH_LOGOUT_URL}`, {
+      method: "GET",
+    });
+
     clearTokens();
+    if (userData) {
+      userData.loggedIn = false;
+      userData.user = null;
+    }
+
+    navigateTo("/login");
   };
 
   return { login, register, logout };

@@ -3,65 +3,95 @@ import { useTokenService } from "~/services/token.service";
 import { ITokens } from "~/types/global";
 
 export default defineNuxtPlugin(() => {
-  const { user, setUser, getAccessToken, getRefreshToken } = useTokenService();
+  const config = useRuntimeConfig();
+  const { tokens, setTokens } = useTokenService();
 
   globalThis.$fetch = ofetch.create({
-    onRequest({ options }) {
-      const token = getAccessToken();
-
+    onRequest({ options, request }) {
       options.timeout = 5000;
-      options.headers = {
-        ...options.headers,
-        Accept: "application/json",
-      };
+      options.headers = new Headers(options.headers);
+      options.ignoreResponseError = options.headers.has("x-ignore-error");
 
-      if (token) {
-        options.headers = {
-          ...options.headers,
-          Authorization: `Bearer ${token}`,
-        };
-      }
-    },
-    async onResponseError({ options, response }) {
       if (
-        options.baseURL !== "http://localhost:7001/v1/auth/login" &&
-        response
+        !options.headers.has("x-token-refresh") &&
+        tokens.value?.accessToken
       ) {
-        if (response.status === 401 && !options.retry) {
-          options.retry = 1;
-
-          const actualRefreshToken = getRefreshToken();
-
-          if (user.value && actualRefreshToken) {
-            try {
-              const tokens = await $fetch<ITokens>(
-                `http://localhost:7001/v1/auth/refresh`,
-                {
-                  headers: {
-                    Authorization: actualRefreshToken,
-                  },
-                }
-              );
-
-              const { refreshToken, accessToken } = tokens;
-
-              setUser({ ...user.value, refreshToken, accessToken });
-            } catch (err) {
-              console.log(err);
-              showError({
-                statusCode: response.status,
-                statusMessage: response.statusText,
-              });
-            }
-          }
-        }
-        console.log("[API Response]", response);
-        showError({
-          name: response._data.error ?? response.type,
-          statusCode: response._data?.statusCode ?? response.status,
-          statusMessage: response._data?.message ?? response.statusText,
+        logger.log(request, "Access Token");
+        options.headers = new Headers({
+          ...options.headers,
+          Authorization: `Bearer ${tokens.value.accessToken}`,
         });
       }
+
+      if (
+        options.headers.has("x-token-refresh") &&
+        tokens.value?.refreshToken
+      ) {
+        logger.log(request, "Refresh Token");
+        options.headers = new Headers({
+          ...options.headers,
+          Authorization: `Bearer ${tokens.value.refreshToken}`,
+        });
+      }
+    },
+    async onRequestError({}) {
+      showError({
+        statusCode: 400,
+        statusMessage: "Problem z połączeniem.",
+      });
+      return;
+    },
+    async onResponseError({ options, response, error }) {
+      options.headers = new Headers(options.headers);
+
+      if (
+        ![
+          config.public.AUTH_LOGIN_URL,
+          config.public.AUTH_REGISTER_URL,
+          config.public.AUTH_LOGOUT_URL,
+          config.public.AUTH_REFRESH_URL,
+        ].includes(response.url) &&
+        !options.headers.has("x-token-refresh")
+      ) {
+        try {
+          const { accessToken, refreshToken } = await $fetch<ITokens>(
+            `${config.public.AUTH_REFRESH_URL}`,
+            {
+              headers: {
+                "x-token-refresh": "true",
+              },
+            },
+          );
+
+          setTokens({ accessToken, refreshToken });
+          return;
+        } catch (err) {
+          logger.log(response, "[API Response]");
+
+          showError({
+            statusMessage: "Błąd połączenia",
+            statusCode: response.status,
+          });
+          return;
+        }
+      }
+
+      if (response.url === config.public.AUTH_REFRESH_URL) {
+        tokens.value = null;
+        showError({
+          statusCode: 401,
+          statusMessage: "Sesja wygasła",
+        });
+        return;
+      }
+
+      showError({
+        statusCode: response.status ?? 400,
+        statusMessage:
+          response._data.message ??
+          error?.message ??
+          "Nieznany błąd. Zgłoś do administratora",
+      });
     },
   });
 });

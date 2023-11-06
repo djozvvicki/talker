@@ -2,7 +2,7 @@ import { useStorage } from "@vueuse/core";
 import { defineStore } from "pinia";
 import type { IUser, Nullable } from "~/types/global";
 import { useAuthService } from "~/services/auth.service";
-import { ILoginUser } from "~/types/auth";
+import { ILoginUser, IRegisterUser } from "~/types/auth";
 
 interface IUserWithStatus {
   user: Nullable<IUser>;
@@ -13,7 +13,7 @@ export const useAuthStore = defineStore("auth", () => {
   const authService = useAuthService();
 
   const userData = useStorage(
-    "TALKER_USERSTATUS",
+    "TALKER_USER",
     {
       user: null,
       loggedIn: false,
@@ -21,21 +21,32 @@ export const useAuthStore = defineStore("auth", () => {
     localStorage,
     {
       serializer: useSerializer<IUserWithStatus>(),
-    }
+    },
   );
 
   const login = async (user: ILoginUser) => {
     try {
-      const loggedUser = await authService.login(user);
+      await authService.login(user);
 
       if (userData.value) {
-        userData.value.user = loggedUser;
         userData.value.loggedIn = true;
-        navigateTo("/");
+        navigateTo("/app");
       }
     } catch (err) {
       if (userData.value) userData.value.loggedIn = false;
       throw err;
+    }
+  };
+
+  const register = async (user: IRegisterUser) => {
+    try {
+      await authService.register(user);
+      if (userData.value) {
+        userData.value.loggedIn = true;
+        navigateTo("/app");
+      }
+    } catch (err) {
+      userData.value && (userData.value.loggedIn = false);
     }
   };
 
@@ -48,5 +59,5 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
-  return { login, logout, userData };
+  return { login, register, logout, userData };
 });
