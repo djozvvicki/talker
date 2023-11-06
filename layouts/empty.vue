@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full h-screen items-center justify-center bg-[#FAFFFC]">
+  <div class="bg-light flex h-screen w-full items-center justify-center">
     <slot />
   </div>
 </template>

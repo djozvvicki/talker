@@ -1,4 +1,4 @@
-import { ITokens, IUser } from "~/types/global";
+import { ITokens } from "~/types/global";
 import { useTokenService } from "./token.service";
 import { ILoginUser, IRegisterUser } from "~/types/auth";
 import { useAuthStore } from "~/stores/auth.store";
@@ -17,13 +17,20 @@ export const useAuthService = () => {
           userName,
           password,
         },
-      }
+      },
     );
 
-    setTokens({ accessToken, refreshToken });
+    setTokens({
+      accessToken,
+      refreshToken,
+    });
   };
 
-  const register = async ({ userName, password, email }: IRegisterUser) => {
+  const register = async ({
+    userName,
+    password,
+    displayName,
+  }: IRegisterUser) => {
     const { accessToken, refreshToken } = await $fetch<ITokens>(
       `${config.public.AUTH_REGISTER_URL}`,
       {
@@ -31,20 +38,26 @@ export const useAuthService = () => {
         body: {
           userName,
           password,
-          email,
+          displayName,
         },
-      }
+      },
     );
 
     setTokens({ accessToken, refreshToken });
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await $fetch(`${config.public.AUTH_LOGOUT_URL}`, {
+      method: "GET",
+    });
+
     clearTokens();
     if (userData) {
       userData.loggedIn = false;
       userData.user = null;
     }
+
+    navigateTo("/login");
   };
 
   return { login, register, logout };

@@ -24,9 +24,6 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   plugins: ["~/plugins/ofetch.ts"],
   modules: ["@pinia/nuxt", "nuxt-socket-io"],
-  routeRules: {
-    "/": { redirect: "/app" },
-  },
   io: {
     sockets: [
       {
@@ -40,6 +37,8 @@ export default defineNuxtConfig({
       AUTH_LOGIN_URL: process.env.AUTH_LOGIN_URL,
       AUTH_USER_URL: process.env.AUTH_USER_URL,
       AUTH_REFRESH_URL: process.env.AUTH_REFRESH_URL,
+      AUTH_REGISTER_URL: process.env.AUTH_REGISTER_URL,
+      AUTH_LOGOUT_URL: process.env.AUTH_LOGOUT_URL,
     },
   },
   postcss: {

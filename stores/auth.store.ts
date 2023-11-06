@@ -2,7 +2,7 @@ import { useStorage } from "@vueuse/core";
 import { defineStore } from "pinia";
 import type { IUser, Nullable } from "~/types/global";
 import { useAuthService } from "~/services/auth.service";
-import { ILoginUser } from "~/types/auth";
+import { ILoginUser, IRegisterUser } from "~/types/auth";
 
 interface IUserWithStatus {
   user: Nullable<IUser>;
@@ -38,6 +38,18 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
+  const register = async (user: IRegisterUser) => {
+    try {
+      await authService.register(user);
+      if (userData.value) {
+        userData.value.loggedIn = true;
+        navigateTo("/app");
+      }
+    } catch (err) {
+      userData.value && (userData.value.loggedIn = false);
+    }
+  };
+
   const logout = () => {
     if (userData.value) {
       authService.logout();
@@ -47,5 +59,5 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
-  return { login, logout, userData };
+  return { login, register, logout, userData };
 });
