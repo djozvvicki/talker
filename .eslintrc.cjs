@@ -11,4 +11,5 @@ module.exports = {
   extends: ["@nuxtjs/eslint-config-typescript", "plugin:prettier/recommended"],
   plugins: ["eslint-plugin-tailwindcss"],
   rules: {},
+  ignorePatterns: ["node_modules/*"],
 };
