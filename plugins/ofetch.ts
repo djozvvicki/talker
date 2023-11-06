@@ -55,7 +55,7 @@ export default defineNuxtPlugin(() => {
       ) {
         try {
           const { accessToken, refreshToken } = await $fetch<ITokens>(
-            "http://localhost:7001/v1/auth/refresh",
+            `${config.public.AUTH_REFRESH_URL}`,
             {
               headers: {
                 "x-token-refresh": "true",
